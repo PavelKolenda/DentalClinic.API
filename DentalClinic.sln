@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic.Services", "De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic.Shared", "DentalClinic.Shared\DentalClinic.Shared.csproj", "{F5B28496-982B-4CA7-B50D-874FBEBE825F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic.Tests", "DentalClinic.Tests\DentalClinic.Tests.csproj", "{06C3A286-6F6D-4FD3-B7A3-962130FC8346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{F5B28496-982B-4CA7-B50D-874FBEBE825F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5B28496-982B-4CA7-B50D-874FBEBE825F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5B28496-982B-4CA7-B50D-874FBEBE825F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06C3A286-6F6D-4FD3-B7A3-962130FC8346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06C3A286-6F6D-4FD3-B7A3-962130FC8346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06C3A286-6F6D-4FD3-B7A3-962130FC8346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06C3A286-6F6D-4FD3-B7A3-962130FC8346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
