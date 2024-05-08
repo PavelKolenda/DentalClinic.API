@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.34825.169
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic.API", "DentalClinic.API\DentalClinic.API.csproj", "{59577262-32FB-4C48-80A2-0DCF9A4C12FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DentalClinic.Models", "DentalClinic.Models\DentalClinic.Models.csproj", "{C6922A46-D028-441F-974B-5E864159C153}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{59577262-32FB-4C48-80A2-0DCF9A4C12FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59577262-32FB-4C48-80A2-0DCF9A4C12FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59577262-32FB-4C48-80A2-0DCF9A4C12FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6922A46-D028-441F-974B-5E864159C153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6922A46-D028-441F-974B-5E864159C153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6922A46-D028-441F-974B-5E864159C153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6922A46-D028-441F-974B-5E864159C153}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
