@@ -1,5 +1,8 @@
 using DentalClinic.Repository;
+
 using Microsoft.EntityFrameworkCore;
+
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,11 @@ builder.Services.AddEntityFrameworkNpgsql()
     {
         configuration.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
     });
+
+builder.Host.UseSerilog((context, configuration) =>
+{
+    configuration.ReadFrom.Configuration(builder.Configuration);
+});
 
 var app = builder.Build();
 
