@@ -18,5 +18,5 @@ public class QueryParameters : IPagedQuery, ISortedQuery
         }
     }
     public string? SortColumn { get; set; }
-    public SortOrder SortOrder { get; set; } = SortOrder.Ascending;
+    public SortOrder? SortOrder { get; set; }
 }
