@@ -1,26 +1,37 @@
+using DentalClinic.API.Extensions;
 using DentalClinic.Repository;
-
-using Microsoft.EntityFrameworkCore;
+using DentalClinic.Repository.Contracts;
+using DentalClinic.Services;
+using DentalClinic.Services.Contracts;
 
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
+builder.Services.AddAutomaticFluentValidation();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddEntityFrameworkNpgsql()
-    .AddDbContext<ClinicDbContext>(configuration =>
-    {
-        configuration.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
-    });
+builder.Services.AddPostgreDB(builder.Configuration);
 
 builder.Host.UseSerilog((context, configuration) =>
 {
     configuration.ReadFrom.Configuration(builder.Configuration);
 });
+
+builder.Services.AddMapper();
+
+builder.Services.AddScoped<IPatientsRepository, PatientsRepository>();
+builder.Services.AddScoped<IPatientsService, PatientsService>();
+
+builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository>();
+
+builder.Services.AddScoped<IDentistRepository, DentistRepository>();
+builder.Services.AddScoped<IDentistsService, DentistsService>();
+
 
 var app = builder.Build();
 
