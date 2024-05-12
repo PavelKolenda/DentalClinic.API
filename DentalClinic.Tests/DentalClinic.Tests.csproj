@@ -17,7 +17,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DentalClinic.API\DentalClinic.API.csproj" />
+    <ProjectReference Include="..\DentalClinic.Repository\DentalClinic.Repository.csproj" />
+    <ProjectReference Include="..\DentalClinic.Services\DentalClinic.Services.csproj" />
+    <ProjectReference Include="..\DentalClinic.Shared\DentalClinic.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UnitTesting\Services\" />
   </ItemGroup>
 
 </Project>
