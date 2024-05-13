@@ -2,6 +2,7 @@ using DentalClinic.API.Extensions;
 using DentalClinic.Repository;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Services;
+using DentalClinic.Services.Auth;
 using DentalClinic.Services.Contracts;
 
 using Serilog;
@@ -25,6 +26,9 @@ builder.Host.UseSerilog((context, configuration) =>
 });
 
 builder.Services.AddMapper();
+
+builder.Services.AddScoped<IdentityService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IPatientsRepository, PatientsRepository>();
 builder.Services.AddScoped<IPatientsService, PatientsService>();
