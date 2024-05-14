@@ -1,0 +1,9 @@
+﻿using DentalClinic.Models.Entities;
+
+namespace DentalClinic.Repository.Contracts
+{
+    public interface IRoleRepository
+    {
+        IQueryable<Role> GetAll();
+    }
+}
