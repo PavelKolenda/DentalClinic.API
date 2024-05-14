@@ -38,6 +38,7 @@ builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IDentistsService, DentistsService>();
 
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 
