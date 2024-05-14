@@ -55,13 +55,27 @@ public class PatientsRepository : IPatientsRepository
         };
     }
 
+    public async Task<Patient> GetById(int id, bool trackChanges)
+    {
+        Patient? patient = trackChanges
+            ? await _context.Patients.FirstOrDefaultAsync(p => p.Id == id)
+            : await _context.Patients.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+
+        if (patient is null)
+        {
+            throw new ArgumentException($"Patient with Id:{id} don't exists");
+        }
+
+        return patient;
+    }
+
     public async Task<Patient> CreateAsync(Patient patient)
     {
-        Role role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Patient");
+        Role? role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Patient");
 
         if (role == null)
         {
-            throw new Exception("");
+            throw new ArgumentException("Role don't exists in database");
         }
 
         patient.Roles = [role];
