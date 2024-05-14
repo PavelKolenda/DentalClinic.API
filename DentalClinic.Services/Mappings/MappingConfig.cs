@@ -12,6 +12,11 @@ public class MappingConfig
         TypeAdapterConfig<PatientCreateDto, Patient>.NewConfig()
             .Map(dest => dest.PasswordHash, src => src.Password);
 
+        TypeAdapterConfig<Patient, PatientDto>.NewConfig();
+
+        TypeAdapterConfig<PatientUpdateDto, Patient>.NewConfig()
+            .Map(dest => dest.PasswordHash, src => src.Password);
+
         TypeAdapterConfig<Patient, PatientCreateDto>.NewConfig();
 
         TypeAdapterConfig<Dentist, DentistDto>.NewConfig()
