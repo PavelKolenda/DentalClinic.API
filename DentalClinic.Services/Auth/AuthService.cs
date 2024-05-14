@@ -16,14 +16,17 @@ public class AuthService : IAuthService
     private readonly IPatientsRepository _patientsRepository;
     private readonly IdentityService _identityService;
     private readonly ILogger<AuthService> _logger;
+    private readonly IPasswordHasher _passwordHasher;
 
     public AuthService(IPatientsRepository patientsRepository,
                        IdentityService identityService,
-                       ILogger<AuthService> logger)
+                       ILogger<AuthService> logger,
+                       IPasswordHasher passwordHasher)
     {
         _patientsRepository = patientsRepository;
         _identityService = identityService;
         _logger = logger;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<string> Register(PatientCreateDto patientCreateDto)
@@ -42,6 +45,8 @@ public class AuthService : IAuthService
             ];
 
         Patient patient = patientCreateDto.Adapt<Patient>();
+
+        patient.PasswordHash = _passwordHasher.Generate(patientCreateDto.Password);
 
         Patient createdPatient = await _patientsRepository.CreateAsync(patient);
 
@@ -93,9 +98,9 @@ public class AuthService : IAuthService
     private async Task<Patient?> AuthenticateAsync(string email, string password)
     {
         var patient = await _patientsRepository.GetAll()
-            .FirstOrDefaultAsync(p => p.Email == email && p.PasswordHash == password);
+            .FirstOrDefaultAsync(p => p.Email == email);
 
-        if (patient is null)
+        if (!_passwordHasher.Verify(password, patient.PasswordHash) || patient is null)
         {
             return null;
         }

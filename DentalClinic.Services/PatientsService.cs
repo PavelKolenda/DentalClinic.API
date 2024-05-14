@@ -1,6 +1,7 @@
 ﻿using DentalClinic.Models.Entities;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
+using DentalClinic.Services.Auth;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs.Patients;
 using DentalClinic.Shared.Pagination;
@@ -14,10 +15,14 @@ public class PatientsService : IPatientsService
 {
     private readonly IPatientsRepository _patientsRepository;
     private readonly ILogger<PatientsService> _logger;
-    public PatientsService(IPatientsRepository patientsRepository, ILogger<PatientsService> logger)
+    private readonly IPasswordHasher _passwordHasher;
+    public PatientsService(IPatientsRepository patientsRepository,
+                           ILogger<PatientsService> logger,
+                           IPasswordHasher passwordHasher)
     {
         _patientsRepository = patientsRepository;
         _logger = logger;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<PatientDto> GetByIdAsync(int id)
@@ -45,6 +50,8 @@ public class PatientsService : IPatientsService
     public async Task UpdateAsync(PatientUpdateDto patientUpdateDto, int id)
     {
         Patient toUpdate = patientUpdateDto.Adapt<Patient>();
+
+        toUpdate.PasswordHash = _passwordHasher.Generate(patientUpdateDto.Password);
 
         await _patientsRepository.UpdateAsync(id, toUpdate);
     }
