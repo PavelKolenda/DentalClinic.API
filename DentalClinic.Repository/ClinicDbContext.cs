@@ -1,5 +1,6 @@
 ﻿using DentalClinic.Models.Entities;
 using DentalClinic.Repository.Configurations;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinic.Repository;
@@ -15,7 +16,6 @@ public class ClinicDbContext : DbContext
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Specialization> Specializations { get; set; }
     public DbSet<WorkingSchedule> WorkingSchedules { get; set; }
-    public DbSet<WorkingDay> WorkingDays { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
