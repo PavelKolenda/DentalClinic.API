@@ -69,6 +69,16 @@ public class PatientsRepository : IPatientsRepository
         return patient;
     }
 
+    public async Task UpdateRoles(Patient patient, IEnumerable<Role> roles)
+    {
+        foreach (Role role in roles)
+        {
+            patient.Roles.Add(role);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Patient> CreateAsync(Patient patient)
     {
         Role? role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Patient");

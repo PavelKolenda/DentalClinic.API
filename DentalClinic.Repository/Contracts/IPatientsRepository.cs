@@ -11,4 +11,5 @@ public interface IPatientsRepository
     Task<Patient> GetById(int id, bool trackChanges);
     PagedList<Patient> GetPaged(QueryParameters query);
     Task UpdateAsync(int id, Patient patient);
+    Task UpdateRoles(Patient patient, IEnumerable<Role> roles);
 }
