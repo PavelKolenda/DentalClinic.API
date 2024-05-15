@@ -38,6 +38,9 @@ builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IDentistsService, DentistsService>();
 
+builder.Services.AddScoped<IWorkingScheduleRepository, WorkingScheduleRepository>();
+builder.Services.AddScoped<IWorkingScheduleService, WorkingScheduleService>();
+
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
