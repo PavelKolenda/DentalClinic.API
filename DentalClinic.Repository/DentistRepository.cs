@@ -42,6 +42,17 @@ public class DentistRepository : IDentistRepository
         _logger.LogInformation("Delete Dentist with Id:{id}", id);
     }
 
+    public async Task AddWorkingSchedule(Dentist dentist, WorkingSchedule workingSchedule)
+    {
+        dentist.WorkingSchedule.Add(workingSchedule);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteWorkingScheduleAsync(Dentist dentist, WorkingSchedule workingSchedule)
+    {
+        dentist.WorkingSchedule.Remove(workingSchedule);
+        await _context.SaveChangesAsync();
+    }
 
     public async Task UpdateAsync(int id, Dentist dentist)
     {
