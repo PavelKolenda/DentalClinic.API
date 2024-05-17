@@ -4,6 +4,7 @@ using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
 
 using Mapster;
@@ -117,6 +118,25 @@ public class DentistsService : IDentistsService
 
         await _dentistRepository.DeleteWorkingScheduleAsync(dentist, workingSchedule);
     }
+
+    public async Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId)
+    {
+        Dentist dentist = await GetDentistWithWorkingScheduleAsync(dentistId);
+
+        var workingSchedule = dentist.WorkingSchedule.Adapt<List<WorkingScheduleDto>>()
+            .OrderBy(x => DayOfWeekMap[x.WorkingDay]);
+
+        return workingSchedule;
+    }
+
+    private static readonly Dictionary<string, int> DayOfWeekMap = new()
+    {
+         {"понедельник", 1},
+         {"вторник", 2},
+         {"среда", 3},
+         {"четверг", 4},
+         {"пятница", 5},
+    };
 
     private async Task<Dentist> GetDentistWithWorkingScheduleAsync(int dentistId)
     {
