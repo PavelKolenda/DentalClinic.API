@@ -1,4 +1,5 @@
-﻿using DentalClinic.Repository.Contracts.Queries;
+﻿using DentalClinic.Models.Entities;
+using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs.Dentists;
 
@@ -44,6 +45,29 @@ public class DentistsController : ControllerBase
     public async Task<ActionResult> Delete(int id)
     {
         await _dentistsService.DeleteAsync(id);
+
+        return NoContent();
+    }
+
+    [HttpGet("{id:int}/schedule")]
+    public async Task<ActionResult<IEnumerable<WorkingSchedule>>> GetSchedule(int id)
+    {
+        var schedule = await _dentistsService.GetWorkingScheduleAsync(id);
+
+        return Ok(schedule);
+    }
+
+    [HttpPost("{id:int}/schedule/{scheduleId:int}")]
+    public async Task<ActionResult> AddSchedule(int id, int scheduleId)
+    {
+        await _dentistsService.AddWorkingSchedule(id, scheduleId);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}/schedule/{scheduleId:int}")]
+    public async Task<ActionResult> DeleteSchedule(int id, int scheduleId)
+    {
+        await _dentistsService.DeleteWorkingSchedule(id, scheduleId);
 
         return NoContent();
     }
