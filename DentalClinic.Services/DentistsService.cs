@@ -4,6 +4,7 @@ using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
 
 using Mapster;
@@ -15,12 +16,15 @@ public class DentistsService : IDentistsService
 {
     private readonly IDentistRepository _dentistRepository;
     private readonly ISpecializationsRepository _specializationsRepository;
+    private readonly IWorkingScheduleRepository _workingScheduleRepository;
 
     public DentistsService(IDentistRepository dentistRepository,
-                           ISpecializationsRepository specializationsRepository)
+                           ISpecializationsRepository specializationsRepository,
+                           IWorkingScheduleRepository workingScheduleRepository)
     {
         _dentistRepository = dentistRepository;
         _specializationsRepository = specializationsRepository;
+        _workingScheduleRepository = workingScheduleRepository;
     }
 
     public PagedList<DentistDto> GetPaged(QueryParameters query)
@@ -55,21 +59,11 @@ public class DentistsService : IDentistsService
 
     public async Task DeleteAsync(int id)
     {
-        if (!IsIdValid(id))
-        {
-            throw new ArgumentException("Invalid id");
-        }
-
         await _dentistRepository.DeleteAsync(id);
     }
 
     public async Task UpdateAsync(DentistUpdateDto dentistDto, int id)
     {
-        if (!IsIdValid(id))
-        {
-            throw new ArgumentException("Invalid id");
-        }
-
         Dentist dentistEntity = dentistDto.Adapt<Dentist>();
 
         var specialization = await _specializationsRepository
@@ -87,8 +81,80 @@ public class DentistsService : IDentistsService
         await _dentistRepository.UpdateAsync(id, dentistEntity);
     }
 
-    private bool IsIdValid(int id)
+    public async Task AddWorkingSchedule(int dentistId, int workingScheduleId)
     {
-        return id >= 0 && id <= int.MaxValue;
+        Dentist dentist = await GetDentistWithWorkingScheduleAsync(dentistId);
+
+        if (dentist.WorkingSchedule.Count == 5)
+        {
+            throw new ArgumentException("");
+        }
+
+        WorkingSchedule? workingSchedule = await _workingScheduleRepository.GetById(workingScheduleId);
+
+        if (workingSchedule is null)
+        {
+            throw new ArgumentException("");
+        }
+
+        if (dentist.WorkingSchedule.Any(x => x.WorkingDay.Equals(workingSchedule.WorkingDay)))
+        {
+            throw new ArgumentException("2 working schedules in same day");
+        }
+
+        await _dentistRepository.AddWorkingSchedule(dentist, workingSchedule);
+    }
+
+    public async Task DeleteWorkingSchedule(int dentistId, int workingScheduleId)
+    {
+        Dentist dentist = await GetDentistWithWorkingScheduleAsync(dentistId);
+
+        if (dentist.WorkingSchedule.Count == 0)
+        {
+            throw new ArgumentException("");
+        }
+
+        WorkingSchedule? workingSchedule = await _workingScheduleRepository.GetById(workingScheduleId);
+
+        if (workingSchedule is null)
+        {
+            throw new ArgumentException("");
+        }
+
+        await _dentistRepository.DeleteWorkingScheduleAsync(dentist, workingSchedule);
+    }
+
+    public async Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId)
+    {
+        Dentist dentist = await GetDentistWithWorkingScheduleAsync(dentistId);
+
+        var workingSchedule = dentist.WorkingSchedule.Adapt<List<WorkingScheduleDto>>()
+            .OrderBy(x => DayOfWeekMap[x.WorkingDay]);
+
+        return workingSchedule;
+    }
+
+    private static readonly Dictionary<string, int> DayOfWeekMap = new()
+    {
+         {"понедельник", 1},
+         {"вторник", 2},
+         {"среда", 3},
+         {"четверг", 4},
+         {"пятница", 5},
+    };
+
+    private async Task<Dentist> GetDentistWithWorkingScheduleAsync(int dentistId)
+    {
+        Dentist? dentist = await _dentistRepository
+            .GetAll()
+            .Include(ws => ws.WorkingSchedule)
+            .FirstOrDefaultAsync(x => x.Id == dentistId);
+
+        if (dentist is null)
+        {
+            throw new ArgumentException("");
+        }
+
+        return dentist;
     }
 }
