@@ -97,6 +97,11 @@ public class DentistsService : IDentistsService
             throw new ArgumentException("");
         }
 
+        if (dentist.WorkingSchedule.Any(x => x.WorkingDay.Equals(workingSchedule.WorkingDay)))
+        {
+            throw new ArgumentException("2 working schedules in same day");
+        }
+
         await _dentistRepository.AddWorkingSchedule(dentist, workingSchedule);
     }
 
