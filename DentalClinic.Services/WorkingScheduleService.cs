@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
@@ -39,7 +40,7 @@ public class WorkingScheduleService : IWorkingScheduleService
     {
         if (!IsWorkingDayValid(workingScheduleCreateDto.WorkingDay))
         {
-            throw new ArgumentException("Invalid working day");
+            throw new InvalidRequestException("Invalid working day");
         }
 
         WorkingSchedule workingSchedule = workingScheduleCreateDto.Adapt<WorkingSchedule>();
@@ -54,7 +55,7 @@ public class WorkingScheduleService : IWorkingScheduleService
     {
         if (!IsWorkingDayValid(wsUpdateDto.WorkingDay))
         {
-            throw new ArgumentException("Invalid Start and End working time");
+            throw new InvalidRequestException("Invalid working day");
         }
 
         var workingSchedule = wsUpdateDto.Adapt<WorkingSchedule>();

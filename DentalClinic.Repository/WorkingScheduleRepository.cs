@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Shared.Pagination;
@@ -46,7 +47,7 @@ public class WorkingScheduleRepository : IWorkingScheduleRepository
 
         if (workingSchedule is null)
         {
-            throw new ArgumentException(""); //TODO: Not found exception
+            throw new NotFoundException($"Working schedule with Id:{id} don't exists");
         }
 
         return workingSchedule;

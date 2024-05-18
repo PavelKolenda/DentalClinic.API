@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Auth;
@@ -69,21 +70,14 @@ public class PatientsService : IPatientsService
 
         if (patient == null)
         {
-            throw new ArgumentException($"Patient with provided Id:{id} don't exists");
+            throw new NotFoundException($"Patient with provided Id:{id} don't exists");
         }
 
         List<Role> roles = [];
 
         foreach (string role in roleDto.Roles)
         {
-            Role? roleEntity = await _roleRepository.GetAll().FirstOrDefaultAsync(r => r.Name == role);
-
-            if (roleEntity is null)
-            {
-                throw new ArgumentException($"Role with provided name:{role} don't exists");
-            }
-
-            roles.Add(roleEntity);
+            roles.Add(await _roleRepository.GetByName(role));
         }
 
         await _patientsRepository.UpdateRoles(patient, roles);

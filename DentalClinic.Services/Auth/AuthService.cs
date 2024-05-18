@@ -2,6 +2,7 @@
 using System.Security.Claims;
 
 using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Shared.DTOs.Patients;
 
@@ -33,7 +34,7 @@ public class AuthService : IAuthService
     {
         if (await IsEmailExists(patientCreateDto.Email))
         {
-            throw new ArgumentException("Email already used");
+            throw new InvalidRequestException($"Provided Email: {patientCreateDto.Email} already exists");
         }
 
         List<Claim> claims =
@@ -70,7 +71,7 @@ public class AuthService : IAuthService
 
         if (patient == null)
         {
-            throw new ArgumentException("User with provided credentials don't exists");
+            throw new InvalidRequestException("User with provided credentials don't exists");
         }
 
         var roles = await GetRolesAsync(patient.Id);

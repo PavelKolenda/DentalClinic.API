@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 
 using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Shared.Pagination;
@@ -13,11 +14,15 @@ public class PatientsRepository : IPatientsRepository
 {
     private readonly ClinicDbContext _context;
     private readonly ILogger<PatientsRepository> _logger;
+    private readonly IRoleRepository _roleRepository;
 
-    public PatientsRepository(ClinicDbContext context, ILogger<PatientsRepository> logger)
+    public PatientsRepository(ClinicDbContext context,
+                              ILogger<PatientsRepository> logger,
+                              IRoleRepository roleRepository)
     {
         _context = context;
         _logger = logger;
+        _roleRepository = roleRepository;
     }
 
     public IQueryable<Patient> GetAll()
@@ -63,7 +68,7 @@ public class PatientsRepository : IPatientsRepository
 
         if (patient is null)
         {
-            throw new ArgumentException($"Patient with Id:{id} don't exists");
+            throw new NotFoundException($"Patient with Id:{id} don't exists");
         }
 
         return patient;
@@ -81,12 +86,7 @@ public class PatientsRepository : IPatientsRepository
 
     public async Task<Patient> CreateAsync(Patient patient)
     {
-        Role? role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Patient");
-
-        if (role == null)
-        {
-            throw new ArgumentException("Role don't exists in database");
-        }
+        Role? role = await _roleRepository.GetByName("Patient");
 
         patient.Roles = [role];
 
