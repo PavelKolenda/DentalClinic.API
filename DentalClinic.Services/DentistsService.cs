@@ -1,5 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
-using DentalClinic.Repository;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
@@ -38,15 +38,7 @@ public class DentistsService : IDentistsService
 
     public async Task<DentistDto> CreateAsync(DentistCreateDto dentistDto)
     {
-        var specialization = await _specializationsRepository
-            .GetAll()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Name == dentistDto.Specialization);
-
-        if (specialization == null)
-        {
-            throw new ArgumentException("Specialization with provided name don't exists in database");
-        }
+        var specialization = await _specializationsRepository.GetByName(dentistDto.Name);
 
         Dentist dentist = dentistDto.Adapt<Dentist>();
 
@@ -66,15 +58,7 @@ public class DentistsService : IDentistsService
     {
         Dentist dentistEntity = dentistDto.Adapt<Dentist>();
 
-        var specialization = await _specializationsRepository
-            .GetAll()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Name == dentistDto.Specialization);
-
-        if (specialization == null)
-        {
-            throw new ArgumentException("Specialization with provided name don't exists in database");
-        }
+        var specialization = await _specializationsRepository.GetByName(dentistDto.Specialization);
 
         dentistEntity.SpecializationId = specialization.Id;
 
@@ -87,19 +71,14 @@ public class DentistsService : IDentistsService
 
         if (dentist.WorkingSchedule.Count == 5)
         {
-            throw new ArgumentException("");
+            throw new InvalidRequestException($"Dentist with Id:{dentist} have full work week");
         }
 
-        WorkingSchedule? workingSchedule = await _workingScheduleRepository.GetById(workingScheduleId);
-
-        if (workingSchedule is null)
-        {
-            throw new ArgumentException("");
-        }
+        WorkingSchedule workingSchedule = await _workingScheduleRepository.GetById(workingScheduleId);
 
         if (dentist.WorkingSchedule.Any(x => x.WorkingDay.Equals(workingSchedule.WorkingDay)))
         {
-            throw new ArgumentException("2 working schedules in same day");
+            throw new InvalidRequestException("Dentist already have working day in this day");
         }
 
         await _dentistRepository.AddWorkingSchedule(dentist, workingSchedule);
@@ -111,15 +90,10 @@ public class DentistsService : IDentistsService
 
         if (dentist.WorkingSchedule.Count == 0)
         {
-            throw new ArgumentException("");
+            throw new InvalidRequestException($"Dentist with Id:{dentist.Id} have don't have empty work schedule");
         }
 
         WorkingSchedule? workingSchedule = await _workingScheduleRepository.GetById(workingScheduleId);
-
-        if (workingSchedule is null)
-        {
-            throw new ArgumentException("");
-        }
 
         await _dentistRepository.DeleteWorkingScheduleAsync(dentist, workingSchedule);
     }
@@ -152,7 +126,7 @@ public class DentistsService : IDentistsService
 
         if (dentist is null)
         {
-            throw new ArgumentException("");
+            throw new NotFoundException($"Dentist with Id:{dentistId} don't exists");
         }
 
         return dentist;

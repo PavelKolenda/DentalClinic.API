@@ -25,6 +25,8 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(builder.Configuration);
 });
 
+builder.Services.AddExceptionHandling();
+
 builder.Services.AddMapper();
 
 builder.Services.AddScoped<IdentityService>();
@@ -46,6 +48,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 
+app.UseExceptionHandler(options => { });
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -56,7 +59,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
+
 
 app.Run();
