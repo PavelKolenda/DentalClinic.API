@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 
+using DentalClinic.API.Extensions.ErrorHandling;
 using DentalClinic.Repository;
 using DentalClinic.Services.Mappings;
 
@@ -26,6 +27,14 @@ public static class ServiceExtensions
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
         services.AddValidatorsFromAssemblyContaining<Program>();
+    }
+
+    public static void AddExceptionHandling(this IServiceCollection services)
+    {
+        services.AddExceptionHandler<ExceptionLoggingHandler>();
+        services.AddExceptionHandler<InvalidRequestExceptionHandler>();
+        services.AddExceptionHandler<NotFoundExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionsHandling>();
     }
 
     public static void AddPostgreDB(this IServiceCollection services, IConfiguration configuration)
