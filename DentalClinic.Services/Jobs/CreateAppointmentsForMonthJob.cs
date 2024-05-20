@@ -31,13 +31,13 @@ public class CreateAppointmentsForMonthJob : CreateAppointmentsJobBase, IJob
 
     public async Task Execute(IJobExecutionContext context)
     {
-        var today = DateTime.UtcNow;
-
         List<Appointment> appointments = [];
 
         for (int i = 0; i < 31; i++)
         {
-            var dayOfWeek = GetDayOfWeekAsString(today.DayOfWeek);
+            var date = DateTime.UtcNow.AddDays(i);
+
+            var dayOfWeek = GetDayOfWeekAsString(date.DayOfWeek);
 
             var dentists = await _dentistRepository
                 .GetAll()
