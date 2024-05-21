@@ -14,6 +14,7 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutomaticFluentValidation();
 
@@ -41,7 +42,7 @@ builder.Services.AddQuartz(opt =>
 
     var createAppointmentsForMonth = new JobKey("CreateAppointmentForMonthJob");
 
-    //opt.AddJob<CreateAppointmentForMonthJob>(opt =>
+    //opt.AddJob<CreateAppointmentsForMonthJob>(opt =>
     //{
     //    opt.WithIdentity(createAppointmentsForMonth);
     //});
@@ -77,6 +78,7 @@ builder.Services.AddScoped<IPatientsRepository, PatientsRepository>();
 builder.Services.AddScoped<IPatientsService, PatientsService>();
 
 builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
+builder.Services.AddScoped<IAppointmentsService, AppointmentsService>();
 
 builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository>();
 
