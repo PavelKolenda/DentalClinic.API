@@ -96,6 +96,7 @@ public class AppointmentsService : IAppointmentsService
         var appointment = await _appointmentsRepository
             .GetAll()
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(a => a.Patient)
             .Include(d => d.Dentist)
                 .ThenInclude(d => d.Specialization)
@@ -113,7 +114,7 @@ public class AppointmentsService : IAppointmentsService
             PatientSurname = appointment.Patient.Surname,
             PatientPatronymic = appointment.Patient.Patronymic,
             AppointmentDate = DateOnly.FromDateTime(appointment.Date),
-            AppointmentTime = TimeOnly.FromDateTime(appointment.Date)
+            AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
         };
 
         return createdAppointment;

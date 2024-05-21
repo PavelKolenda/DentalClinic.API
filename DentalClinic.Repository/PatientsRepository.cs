@@ -37,11 +37,11 @@ public class PatientsRepository : IPatientsRepository
         {
             if (query.SortOrder == Shared.Sorting.SortOrder.Ascending)
             {
-                dbQuery.OrderBy(GetSortColumn(query));
+                dbQuery = dbQuery.OrderBy(GetSortColumn(query));
             }
             else
             {
-                dbQuery.OrderByDescending(GetSortColumn(query));
+                dbQuery = dbQuery.OrderByDescending(GetSortColumn(query));
             }
         }
 

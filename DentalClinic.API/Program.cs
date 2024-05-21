@@ -81,6 +81,7 @@ builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
 builder.Services.AddScoped<IAppointmentsService, AppointmentsService>();
 
 builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository>();
+builder.Services.AddScoped<ISpecializationsService, SpecializationsService>();
 
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IDentistsService, DentistsService>();
