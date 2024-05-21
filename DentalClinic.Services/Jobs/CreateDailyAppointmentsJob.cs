@@ -35,13 +35,14 @@ public class CreateDailyAppointmentsJob : CreateAppointmentsJobBase, IJob
 
         var dentists = await _dentistRepository
             .GetAll()
+            .AsNoTracking()
             .Include(ws => ws.WorkingSchedule)
             .Where(d => d.WorkingSchedule.Any(ws => ws.WorkingDay == dayOfWeek))
-             .Select(d => new
-             {
-                 d.Id,
-                 WorkingSchedule = d.WorkingSchedule.FirstOrDefault(ws => ws.WorkingDay == dayOfWeek)
-             })
+            .Select(d => new
+            {
+                d.Id,
+                WorkingSchedule = d.WorkingSchedule.FirstOrDefault(ws => ws.WorkingDay == dayOfWeek)
+            })
             .ToListAsync();
 
         List<Appointment> appointments = [];
