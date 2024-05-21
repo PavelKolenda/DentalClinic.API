@@ -1,8 +1,10 @@
 ﻿using DentalClinic.Models.Entities;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
+using DentalClinic.Shared.DTOs;
 using DentalClinic.Shared.DTOs.Dentists;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentalClinic.API.Controllers;
@@ -11,10 +13,13 @@ namespace DentalClinic.API.Controllers;
 public class DentistsController : ControllerBase
 {
     private readonly IDentistsService _dentistsService;
+    private readonly IAppointmentsService _appointmentsService;
 
-    public DentistsController(IDentistsService dentistsService)
+    public DentistsController(IDentistsService dentistsService,
+                              IAppointmentsService appointmentsService)
     {
         _dentistsService = dentistsService;
+        _appointmentsService = appointmentsService;
     }
 
     [HttpGet]
@@ -23,6 +28,16 @@ public class DentistsController : ControllerBase
         var dentists = _dentistsService.GetPaged(query);
 
         return Ok(dentists);
+    }
+
+
+    [HttpGet("{dentistId:int}/available-appointments")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<AvailableAppointmentsDto>>> GetAvailableForMonth(int dentistId)
+    {
+        var appointments = await _appointmentsService.GetAvailableForMonthAsync(dentistId);
+
+        return Ok(appointments);
     }
 
     [HttpPost]

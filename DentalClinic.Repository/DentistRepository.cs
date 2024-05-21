@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 
 using DentalClinic.Models.Entities;
+using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Shared.Pagination;
@@ -33,6 +34,24 @@ public class DentistRepository : IDentistRepository
         await _context.Dentists.AddAsync(dentist);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Create Dentist with Id:{Id}", dentist.Id);
+        return dentist;
+    }
+
+    public async Task<Dentist> GetByIdAsync(int id, bool trackChanges)
+    {
+        IQueryable<Dentist> query = _context.Dentists;
+        if (!trackChanges)
+        {
+            query = query.AsNoTracking();
+        }
+
+        Dentist? dentist = await query.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (dentist is null)
+        {
+            throw new NotFoundException($"Dentist with id:{id} doesn't exist");
+        }
+
         return dentist;
     }
 

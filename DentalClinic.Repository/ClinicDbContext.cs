@@ -22,5 +22,6 @@ public class ClinicDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DentistConfiguration());
         modelBuilder.ApplyConfiguration(new PatientConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
+        modelBuilder.ApplyConfiguration(new AppointmentsConfiguration());
     }
 }

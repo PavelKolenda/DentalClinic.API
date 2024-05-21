@@ -10,6 +10,7 @@ public interface IDentistRepository
     Task DeleteAsync(int id);
     Task DeleteWorkingScheduleAsync(Dentist dentist, WorkingSchedule workingSchedule);
     IQueryable<Dentist> GetAll();
+    Task<Dentist> GetByIdAsync(int id, bool trackChanges);
     PagedList<Dentist> GetPaged(QueryParameters query);
     Task UpdateAsync(int id, Dentist dentist);
 }
