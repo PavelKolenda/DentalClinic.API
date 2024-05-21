@@ -36,6 +36,22 @@ public class DentistsService : IDentistsService
         return new PagedList<DentistDto>(dentistsDto, dentists.Page, dentists.PageSize, dentists.TotalCount);
     }
 
+    public async Task<IEnumerable<DentistDto>> GetBySpecialization(int specializationId)
+    {
+        Specialization specialization = await _specializationsRepository.GetByIdAsync(specializationId, false);
+
+        var dentists = await _dentistRepository
+            .GetAll()
+            .AsNoTracking()
+            .Include(s => s.Specialization)
+            .Where(x => x.SpecializationId == specialization.Id)
+            .ToListAsync();
+
+        List<DentistDto> dentistsDto = dentists.Adapt<List<DentistDto>>();
+
+        return dentistsDto;
+    }
+
     public async Task<DentistDto> CreateAsync(DentistCreateDto dentistDto)
     {
         var specialization = await _specializationsRepository.GetByName(dentistDto.Name);

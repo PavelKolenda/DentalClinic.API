@@ -40,6 +40,14 @@ public class DentistsController : ControllerBase
         return Ok(appointments);
     }
 
+    [HttpGet("Specializations/{specializationId:int}")]
+    public async Task<ActionResult<IEnumerable<DentistDto>>> GetBySpecialization(int specializationId)
+    {
+        var dentists = await _dentistsService.GetBySpecialization(specializationId);
+
+        return Ok(dentists);
+    }
+
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] DentistCreateDto dentistCreateDto)
     {
