@@ -37,13 +37,19 @@ public class DentistRepository : IDentistRepository
         return dentist;
     }
 
-    public async Task<Dentist> GetByIdAsync(int id)
+    public async Task<Dentist> GetByIdAsync(int id, bool trackChanges)
     {
-        Dentist? dentist = await _context.Dentists.FirstOrDefaultAsync(x => x.Id == id);
+        IQueryable<Dentist> query = _context.Dentists;
+        if (!trackChanges)
+        {
+            query = query.AsNoTracking();
+        }
+
+        Dentist? dentist = await query.FirstOrDefaultAsync(x => x.Id == id);
 
         if (dentist is null)
         {
-            throw new NotFoundException("Dentist with id:{id} don't exists");
+            throw new NotFoundException($"Dentist with id:{id} doesn't exist");
         }
 
         return dentist;
