@@ -1,6 +1,5 @@
 ﻿using DentalClinic.API.Filters;
 using DentalClinic.Services.Contracts;
-using DentalClinic.Shared.DTOs;
 using DentalClinic.Shared.DTOs.Appointments;
 
 using Microsoft.AspNetCore.Authorization;
@@ -16,15 +15,6 @@ public class AppointmentsController : ControllerBase
     public AppointmentsController(IAppointmentsService appointmentsService)
     {
         _appointmentsService = appointmentsService;
-    }
-
-    [HttpGet("{dentistId:int}")]
-    [Authorize(Roles = "Patient")]
-    public async Task<ActionResult<IEnumerable<AvailableAppointmentsDto>>> GetAvailableForMonth(int dentistId)
-    {
-        var appointments = await _appointmentsService.GetAvailableForMonthAsync(dentistId);
-
-        return Ok(appointments);
     }
 
     [HttpPost("{dentistId:int}/{appointmentId:int}")]
