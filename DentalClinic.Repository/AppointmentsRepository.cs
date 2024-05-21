@@ -24,6 +24,19 @@ public class AppointmentsRepository : IAppointmentsRepository
         return appointments;
     }
 
+    public async Task<IEnumerable<Appointment>> GetAvailableAsync(int dentistId)
+    {
+        DateTime today = DateTime.UtcNow;
+
+        var appointments = await _context.Appointments
+            .AsNoTracking()
+            .Include(a => a.Dentist)
+            .Where(a => a.Date >= today && a.Date <= today.AddDays(31) && a.PatientId == null && a.DentistId == dentistId)
+            .ToListAsync();
+
+        return appointments;
+    }
+
     public async Task<Appointment> CreateAsync(Appointment appointment)
     {
         await _context.Appointments.AddAsync(appointment);

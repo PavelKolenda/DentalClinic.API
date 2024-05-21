@@ -8,5 +8,6 @@ public interface IAppointmentsRepository
     Task CreateAsync(IEnumerable<Appointment> appointments);
     Task DeleteAsync(int appointmentId, int patientId);
     IQueryable<Appointment> GetAll();
+    Task<IEnumerable<Appointment>> GetAvailableAsync(int dentistId);
     Task<Appointment> GetById(int id);
 }
