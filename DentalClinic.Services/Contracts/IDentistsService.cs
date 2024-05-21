@@ -10,6 +10,7 @@ public interface IDentistsService
     Task<DentistDto> CreateAsync(DentistCreateDto dentistDto);
     Task DeleteAsync(int id);
     Task DeleteWorkingSchedule(int dentistId, int workingScheduleId);
+    Task<IEnumerable<DentistDto>> GetBySpecialization(int specializationId);
     PagedList<DentistDto> GetPaged(QueryParameters query);
     Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId);
     Task UpdateAsync(DentistUpdateDto dentistDto, int id);
