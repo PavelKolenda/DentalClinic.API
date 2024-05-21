@@ -34,13 +34,9 @@ public class AppointmentsService : IAppointmentsService
 
     public async Task<IEnumerable<AvailableAppointmentsDto>> GetAvailableForMonthAsync(int dentistId)
     {
-        DateTime today = DateTime.UtcNow;
+        var dentist = await _dentistRepository.GetByIdAsync(dentistId, false);
 
-        var appointments = await _appointmentsRepository
-            .GetAll()
-            .Include(a => a.Dentist)
-            .Where(a => a.Date >= today && a.Date <= today.AddDays(31) && a.PatientId == null && a.DentistId == dentistId)
-            .ToListAsync();
+        var appointments = await _appointmentsRepository.GetAvailableAsync(dentist.Id);
 
         var availableAppointments = appointments
             .GroupBy(a => new { a.DentistId, Date = DateOnly.FromDateTime(a.Date) })
@@ -63,7 +59,7 @@ public class AppointmentsService : IAppointmentsService
     {
         int patientId = GetPatientIdFromClaims();
 
-        Dentist dentist = await _dentistRepository.GetByIdAsync(dentistId);
+        Dentist dentist = await _dentistRepository.GetByIdAsync(dentistId, false);
         Appointment appointment = await _appointmentsRepository.GetById(appointmentId);
         Patient patient = await _patientsRepository.GetById(patientId, false);
 
@@ -99,6 +95,7 @@ public class AppointmentsService : IAppointmentsService
 
         var appointment = await _appointmentsRepository
             .GetAll()
+            .AsNoTracking()
             .Include(a => a.Patient)
             .Include(d => d.Dentist)
                 .ThenInclude(d => d.Specialization)
