@@ -78,6 +78,6 @@ public class CreateAppointmentsForMonthJob : CreateAppointmentsJobBase, IJob
             }
         }
 
-        await _appointmentsRepository.CreateAppointments(appointments);
+        await _appointmentsRepository.CreateAsync(appointments);
     }
 }

@@ -73,6 +73,6 @@ public class CreateDailyAppointmentsJob : CreateAppointmentsJobBase, IJob
                                                      _options.TimeToOneAppointment.Minute));
         }
 
-        await _appointmentsRepository.CreateAppointments(appointments);
+        await _appointmentsRepository.CreateAsync(appointments);
     }
 }
