@@ -2,6 +2,7 @@
 
 using DentalClinic.API.Extensions.ErrorHandling;
 using DentalClinic.Repository;
+using DentalClinic.Services.Jobs;
 using DentalClinic.Services.Mappings;
 
 using FluentValidation;
@@ -10,6 +11,8 @@ using FluentValidation.AspNetCore;
 using Mapster;
 
 using Microsoft.EntityFrameworkCore;
+
+using Quartz;
 
 namespace DentalClinic.API.Extensions;
 public static class ServiceExtensions
@@ -24,6 +27,42 @@ public static class ServiceExtensions
                        .AllowAnyHeader());
         });
     }
+
+    public static void AddQuartsAndJobs(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddQuartz(opt =>
+        {
+            opt.UseMicrosoftDependencyInjectionJobFactory();
+
+            var createAppointmentsForNextDayKey = new JobKey("CreateAppointmentsForDentistsJob");
+
+            var createAppointmentsForMonth = new JobKey("CreateAppointmentForMonthJob");
+
+            //opt.AddJob<CreateAppointmentsForMonthJob>(opt =>
+            //{
+            //    opt.WithIdentity(createAppointmentsForMonth);
+            //});
+
+            opt.AddJob<CreateDailyAppointmentsJob>(opt =>
+            {
+                opt.WithIdentity(createAppointmentsForNextDayKey);
+            });
+
+            opt.AddTrigger(opt =>
+            {
+                opt
+                .ForJob(createAppointmentsForNextDayKey)
+                .WithIdentity("CreateAppointmentsForDentistsJob-trigger")
+                .WithCronSchedule(configuration.GetSection("CreateAppointmentsOptions:CronSchedule").Value);
+            });
+
+            //opt.AddTrigger(opt => opt
+            //    .ForJob(createAppointmentsForMonth)
+            //    .WithIdentity("CreateAppointmentsForMonth-trigger")
+            //    .WithSimpleSchedule(schedule => schedule.WithRepeatCount(0)));
+        });
+    }
+
     public static void AddMapper(this IServiceCollection services)
     {
         MappingConfig.Configure();
