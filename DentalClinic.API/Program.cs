@@ -21,6 +21,8 @@ builder.Services.AddAutomaticFluentValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.ConfigureCors();
+
 builder.Services.AddPostgreDB(builder.Configuration);
 
 builder.RegisterAuthentication();
@@ -102,6 +104,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
