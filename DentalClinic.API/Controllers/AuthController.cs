@@ -16,19 +16,19 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] PatientCreateDto patientCreateDto)
+    public async Task<ActionResult<AuthResponse>> Register([FromBody] PatientCreateDto patientCreateDto)
     {
-        string token = await _authService.Register(patientCreateDto);
+        var response = await _authService.Register(patientCreateDto);
 
-        return Ok(token);
+        return Ok(response);
     }
 
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> Login([FromBody] PatientLoginDto patientLoginDto)
+    public async Task<ActionResult<AuthResponse>> Login([FromBody] PatientLoginDto patientLoginDto)
     {
-        var token = await _authService.Login(patientLoginDto);
+        var response = await _authService.Login(patientLoginDto);
 
-        return Ok(token);
+        return Ok(response);
     }
 }
