@@ -30,7 +30,7 @@ public class AuthService : IAuthService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<string> Register(PatientCreateDto patientCreateDto)
+    public async Task<AuthResponse> Register(PatientCreateDto patientCreateDto)
     {
         if (await IsEmailExists(patientCreateDto.Email))
         {
@@ -53,7 +53,7 @@ public class AuthService : IAuthService
 
         ClaimsIdentity claimsIdentity = new(
         [
-            new("Id", createdPatient.Id.ToString())
+            new("Id", createdPatient.Id.ToString()),
         ]);
 
         claimsIdentity.AddClaims(claims);
@@ -62,10 +62,18 @@ public class AuthService : IAuthService
 
         var response = _identityService.WriteToken(token);
 
-        return response;
+        var userRoles = await GetRolesAsync(createdPatient.Id);
+        AuthResponse authResponse = new()
+        {
+            Token = response,
+            User = createdPatient.Adapt<PatientDto>(),
+            Roles = userRoles
+        };
+
+        return authResponse;
     }
 
-    public async Task<string> Login(PatientLoginDto patientLoginDto)
+    public async Task<AuthResponse> Login(PatientLoginDto patientLoginDto)
     {
         Patient? patient = await AuthenticateAsync(patientLoginDto.Email, patientLoginDto.Password);
 
@@ -93,7 +101,14 @@ public class AuthService : IAuthService
 
         var response = _identityService.WriteToken(token);
 
-        return response;
+        AuthResponse authResponse = new()
+        {
+            Token = response,
+            User = patient.Adapt<PatientDto>(),
+            Roles = roles
+        };
+
+        return authResponse;
     }
 
     private async Task<Patient?> AuthenticateAsync(string email, string password)
