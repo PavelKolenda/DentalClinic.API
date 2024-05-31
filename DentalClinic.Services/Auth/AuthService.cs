@@ -8,6 +8,7 @@ using DentalClinic.Shared.DTOs.Patients;
 
 using Mapster;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -18,16 +19,19 @@ public class AuthService : IAuthService
     private readonly IdentityService _identityService;
     private readonly ILogger<AuthService> _logger;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IHttpContextAccessor _contextAccessor;
 
     public AuthService(IPatientsRepository patientsRepository,
                        IdentityService identityService,
                        ILogger<AuthService> logger,
-                       IPasswordHasher passwordHasher)
+                       IPasswordHasher passwordHasher,
+                       IHttpContextAccessor contextAccessor)
     {
         _patientsRepository = patientsRepository;
         _identityService = identityService;
         _logger = logger;
         _passwordHasher = passwordHasher;
+        _contextAccessor = contextAccessor;
     }
 
     public async Task<AuthResponse> Register(PatientCreateDto patientCreateDto)
@@ -105,6 +109,24 @@ public class AuthService : IAuthService
         {
             Token = response,
             User = patient.Adapt<PatientDto>(),
+            Roles = roles
+        };
+
+        return authResponse;
+    }
+
+    public async Task<AuthResponse> GetCurrentUser(int userId)
+    {
+        var patientEntity = await _patientsRepository.GetById(userId, false);
+        var patientDto = patientEntity.Adapt<PatientDto>();
+
+        string jwtToken = _contextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var roles = await GetRolesAsync(userId);
+
+        AuthResponse authResponse = new()
+        {
+            Token = jwtToken,
+            User = patientDto,
             Roles = roles
         };
 
