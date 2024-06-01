@@ -32,20 +32,12 @@ public class DentistsController : ControllerBase
 
 
     [HttpGet("{dentistId:int}/available-appointments")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<AvailableAppointmentsDto>>> GetAvailableForMonth(int dentistId)
     {
         var appointments = await _appointmentsService.GetAvailableForMonthAsync(dentistId);
 
         return Ok(appointments);
-    }
-
-    [HttpGet("Specializations/{specializationId:int}")]
-    public async Task<ActionResult<IEnumerable<DentistDto>>> GetBySpecialization(int specializationId)
-    {
-        var dentists = await _dentistsService.GetBySpecialization(specializationId);
-
-        return Ok(dentists);
     }
 
     [HttpPost]
