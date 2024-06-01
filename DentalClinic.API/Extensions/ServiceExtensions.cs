@@ -17,17 +17,6 @@ using Quartz;
 namespace DentalClinic.API.Extensions;
 public static class ServiceExtensions
 {
-    public static void ConfigureCors(this IServiceCollection services)
-    {
-        services.AddCors(options =>
-        {
-            options.AddPolicy("CorsPolicy", builder =>
-                builder.AllowAnyOrigin()
-                       .AllowAnyMethod()
-                       .AllowAnyHeader());
-        });
-    }
-
     public static void AddQuartsAndJobs(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddQuartz(opt =>

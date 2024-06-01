@@ -20,8 +20,6 @@ builder.Services.AddAutomaticFluentValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.ConfigureCors();
-
 builder.Services.AddPostgreDB(builder.Configuration);
 
 builder.RegisterAuthentication();
@@ -74,7 +72,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("CorsPolicy");
+app.UseCors(options =>
+{
+    options.WithOrigins("http://localhost:4200")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials();
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
