@@ -3,6 +3,7 @@
 namespace DentalClinic.Services.Auth;
 public interface IAuthService
 {
-    Task<string> Login(PatientLoginDto patientLoginDto);
-    Task<string> Register(PatientCreateDto patientCreateDto);
+    Task<AuthResponse> GetCurrentUser(int userId);
+    Task<AuthResponse> Login(PatientLoginDto patientLoginDto);
+    Task<AuthResponse> Register(PatientCreateDto patientCreateDto);
 }

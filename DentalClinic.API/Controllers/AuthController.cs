@@ -1,6 +1,7 @@
 ﻿using DentalClinic.Services.Auth;
 using DentalClinic.Shared.DTOs.Patients;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DentalClinic.API.Controllers;
@@ -16,19 +17,35 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("register")]
-    public async Task<IActionResult> Register([FromBody] PatientCreateDto patientCreateDto)
+    public async Task<ActionResult<AuthResponse>> Register([FromBody] PatientCreateDto patientCreateDto)
     {
-        string token = await _authService.Register(patientCreateDto);
+        var response = await _authService.Register(patientCreateDto);
 
-        return Ok(token);
+        return Ok(response);
     }
 
     [HttpPost]
     [Route("login")]
-    public async Task<IActionResult> Login([FromBody] PatientLoginDto patientLoginDto)
+    public async Task<ActionResult<AuthResponse>> Login([FromBody] PatientLoginDto patientLoginDto)
     {
-        var token = await _authService.Login(patientLoginDto);
+        var response = await _authService.Login(patientLoginDto);
 
-        return Ok(token);
+        return Ok(response);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<ActionResult<AuthResponse>> GetCurrentUser()
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "Id");
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        int userId = int.Parse(userIdClaim.Value);
+
+        AuthResponse authResponse = await _authService.GetCurrentUser(userId);
+        return authResponse;
     }
 }

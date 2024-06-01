@@ -26,7 +26,7 @@ public class AppointmentsController : ControllerBase
         return Ok(appointment);
     }
 
-    [HttpGet("{appointmentId:int}/get-appointment")]
+    [HttpGet("{appointmentId:int}")]
     [Authorize(Roles = "Patient")]
     public async Task<ActionResult<AppointmentDto>> GetAppointment(int appointmentId)
     {

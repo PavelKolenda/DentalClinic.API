@@ -1,6 +1,7 @@
 ﻿using DentalClinic.API.Filters;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
+using DentalClinic.Shared.DTOs.Dentists;
 using DentalClinic.Shared.DTOs.Specializations;
 using DentalClinic.Shared.Pagination;
 
@@ -15,10 +16,11 @@ namespace DentalClinic.API.Controllers;
 public class SpecializationsController : ControllerBase
 {
     private readonly ISpecializationsService _specializationsService;
-
-    public SpecializationsController(ISpecializationsService specializationsService)
+    private readonly IDentistsService _dentistsService;
+    public SpecializationsController(ISpecializationsService specializationsService, IDentistsService dentistsService)
     {
         _specializationsService = specializationsService;
+        _dentistsService = dentistsService;
     }
 
     [HttpGet]
@@ -60,5 +62,14 @@ public class SpecializationsController : ControllerBase
         await _specializationsService.DeleteAsync(id);
 
         return NoContent();
+    }
+
+    [HttpGet("{specializationId:int}/dentists")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<DentistDto>>> GetBySpecialization(int specializationId)
+    {
+        var dentists = await _dentistsService.GetBySpecialization(specializationId);
+
+        return Ok(dentists);
     }
 }
