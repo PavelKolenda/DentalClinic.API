@@ -4,12 +4,14 @@ using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Auth;
 using DentalClinic.Services.Contracts;
+using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Patients;
 using DentalClinic.Shared.DTOs.Roles;
 using DentalClinic.Shared.Pagination;
 
 using Mapster;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,15 +22,19 @@ public class PatientsService : IPatientsService
     private readonly ILogger<PatientsService> _logger;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IRoleRepository _roleRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     public PatientsService(IPatientsRepository patientsRepository,
                            ILogger<PatientsService> logger,
                            IPasswordHasher passwordHasher,
-                           IRoleRepository roleRepository)
+                           IRoleRepository roleRepository,
+                           IHttpContextAccessor httpContextAccessor)
     {
         _patientsRepository = patientsRepository;
         _logger = logger;
         _passwordHasher = passwordHasher;
         _roleRepository = roleRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<PatientDto> GetByIdAsync(int id)
@@ -82,5 +88,45 @@ public class PatientsService : IPatientsService
 
         await _patientsRepository.UpdateRoles(patient, roles);
         _logger.LogInformation("Update role for user with Id:{id}", id);
+    }
+
+    public PagedList<AppointmentDto> GetAppointments(QueryParameters query)
+    {
+        int patientId = GetPatientIdFromClaims();
+
+        var appointments = _patientsRepository.GetAllAppointments(patientId, query);
+        List<AppointmentDto> appointmentsDto = [];
+
+        foreach (var appointment in appointments.Items)
+        {
+            appointmentsDto.Add(new AppointmentDto()
+            {
+                AppointmentId = appointment.Id,
+                DentistName = appointment.Dentist.Name,
+                DentistSurname = appointment.Dentist.Surname,
+                DentistPatronymic = appointment.Dentist.Patronymic,
+                DentistCabinetNumber = appointment.Dentist.CabinetNumber,
+                DentistSpecialization = appointment.Dentist.Specialization.Name,
+                PatientName = appointment.Patient.Name,
+                PatientSurname = appointment.Patient.Surname,
+                PatientPatronymic = appointment.Patient.Patronymic,
+                AppointmentDate = DateOnly.FromDateTime(appointment.Date),
+                AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
+            });
+        }
+        return new PagedList<AppointmentDto>(appointmentsDto, appointments.Page, appointments.PageSize, appointments.TotalCount);
+    }
+
+    public int GetPatientIdFromClaims()
+    {
+        var patientIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("Id");
+
+        if (patientIdClaim == null)
+        {
+            throw new UnauthorizedAccessException("Patient isn't authorized");
+        }
+
+        int patientId = Convert.ToInt32(patientIdClaim.Value);
+        return patientId;
     }
 }
