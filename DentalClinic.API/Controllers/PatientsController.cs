@@ -1,6 +1,7 @@
 ﻿using DentalClinic.API.Filters;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
+using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Patients;
 using DentalClinic.Shared.DTOs.Roles;
 using DentalClinic.Shared.Pagination;
@@ -63,5 +64,14 @@ public class PatientsController : ControllerBase
     {
         await _patientsService.UpdateRoles(id, roleDto);
         return NoContent();
+    }
+
+    [HttpGet("appointments")]
+    [Authorize(Roles = "Patient")]
+    public ActionResult<PagedList<AppointmentDto>> GetAppointments([FromQuery] QueryParameters query)
+    {
+        var appointments = _patientsService.GetAppointments(query);
+
+        return Ok(appointments);
     }
 }
