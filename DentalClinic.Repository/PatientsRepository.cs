@@ -118,4 +118,20 @@ public class PatientsRepository : IPatientsRepository
 
         _logger.LogInformation("Updated Patient with Id:{id}", id);
     }
+
+    public PagedList<Appointment> GetAllAppointments(int patientId, QueryParameters query)
+    {
+        var appointments = _context.Appointments
+            .AsNoTracking()
+            .AsQueryable()
+            .AsSingleQuery()
+            .Include(x => x.Patient)
+            .Include(d => d.Dentist)
+                .ThenInclude(s => s.Specialization)
+            .Where(x => x.PatientId == patientId)
+            .OrderBy(x => x.Date);
+
+
+        return PagedListExtensions<Appointment>.Create(appointments, query.Page, query.PageSize);
+    }
 }
