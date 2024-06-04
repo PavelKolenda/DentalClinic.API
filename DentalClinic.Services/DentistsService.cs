@@ -3,12 +3,14 @@ using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
+using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
 using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
 
 using Mapster;
 
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace DentalClinic.Services;
@@ -17,14 +19,17 @@ public class DentistsService : IDentistsService
     private readonly IDentistRepository _dentistRepository;
     private readonly ISpecializationsRepository _specializationsRepository;
     private readonly IWorkingScheduleRepository _workingScheduleRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public DentistsService(IDentistRepository dentistRepository,
                            ISpecializationsRepository specializationsRepository,
-                           IWorkingScheduleRepository workingScheduleRepository)
+                           IWorkingScheduleRepository workingScheduleRepository,
+                           IHttpContextAccessor httpContextAccessor)
     {
         _dentistRepository = dentistRepository;
         _specializationsRepository = specializationsRepository;
         _workingScheduleRepository = workingScheduleRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public PagedList<DentistDto> GetPaged(QueryParameters query)
@@ -146,5 +151,48 @@ public class DentistsService : IDentistsService
         }
 
         return dentist;
+    }
+
+
+    public PagedList<AppointmentDto> GetAppointmentsList(QueryParameters query, DateOnly specificDate)
+    {
+        int dentistId = GetDentistIdFromClaims();
+
+        var appointments = _dentistRepository.GetAppointmentsList(dentistId, query, specificDate);
+
+        List<AppointmentDto> appointmentsDto = [];
+
+        foreach (var appointment in appointments.Items)
+        {
+            appointmentsDto.Add(new AppointmentDto()
+            {
+                AppointmentId = appointment.Id,
+                DentistName = appointment.Dentist.Name,
+                DentistSurname = appointment.Dentist.Surname,
+                DentistPatronymic = appointment.Dentist.Patronymic,
+                DentistCabinetNumber = appointment.Dentist.CabinetNumber,
+                DentistSpecialization = appointment.Dentist.Specialization.Name,
+                PatientName = appointment.Patient.Name,
+                PatientSurname = appointment.Patient.Surname,
+                PatientPatronymic = appointment.Patient.Patronymic,
+                AppointmentDate = DateOnly.FromDateTime(appointment.Date),
+                AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
+            });
+        }
+
+        return new PagedList<AppointmentDto>(appointmentsDto, appointments.Page, appointments.PageSize, appointments.TotalCount);
+    }
+
+    public int GetDentistIdFromClaims()
+    {
+        var patientIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("dentistId");
+
+        if (patientIdClaim == null)
+        {
+            throw new UnauthorizedAccessException("Dentist isn't authorized");
+        }
+
+        int patientId = Convert.ToInt32(patientIdClaim.Value);
+        return patientId;
     }
 }
