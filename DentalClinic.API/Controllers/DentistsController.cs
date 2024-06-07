@@ -2,7 +2,9 @@
 using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs;
+using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.Pagination;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,5 +87,15 @@ public class DentistsController : ControllerBase
         await _dentistsService.DeleteWorkingSchedule(id, scheduleId);
 
         return NoContent();
+    }
+
+    [HttpGet("appointments-list")]
+    [Authorize(Roles = "Dentist")]
+    public ActionResult<PagedList<AppointmentDto>> GetAppointmentsList([FromQuery] QueryParameters queryParameters,
+        [FromQuery] DateOnly specificDate)
+    {
+        var appointments = _dentistsService.GetAppointmentsList(queryParameters, specificDate);
+
+        return Ok(appointments);
     }
 }

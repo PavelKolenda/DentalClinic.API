@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Repository.Contracts.Queries;
+using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
 using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
@@ -10,6 +11,7 @@ public interface IDentistsService
     Task<DentistDto> CreateAsync(DentistCreateDto dentistDto);
     Task DeleteAsync(int id);
     Task DeleteWorkingSchedule(int dentistId, int workingScheduleId);
+    PagedList<AppointmentDto> GetAppointmentsList(QueryParameters query, DateOnly specificDate);
     Task<IEnumerable<DentistDto>> GetBySpecialization(int specializationId);
     PagedList<DentistDto> GetPaged(QueryParameters query);
     Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId);

@@ -20,18 +20,21 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IHttpContextAccessor _contextAccessor;
+    private readonly IDentistRepository _dentistRepository;
 
     public AuthService(IPatientsRepository patientsRepository,
                        IdentityService identityService,
                        ILogger<AuthService> logger,
                        IPasswordHasher passwordHasher,
-                       IHttpContextAccessor contextAccessor)
+                       IHttpContextAccessor contextAccessor,
+                       IDentistRepository dentistRepository)
     {
         _patientsRepository = patientsRepository;
         _identityService = identityService;
         _logger = logger;
         _passwordHasher = passwordHasher;
         _contextAccessor = contextAccessor;
+        _dentistRepository = dentistRepository;
     }
 
     public async Task<AuthResponse> Register(PatientCreateDto patientCreateDto)
@@ -99,6 +102,15 @@ public class AuthService : IAuthService
         foreach (string role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        if (roles.Contains("Dentist"))
+        {
+            var dentist = await _dentistRepository
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.Name == patient.Name && x.Surname == patient.Surname && x.Patronymic == patient.Patronymic);
+
+            claims.Add(new Claim("dentistId", dentist.Id.ToString()));
         }
 
         var token = _identityService.CreateSecurityToken(new ClaimsIdentity(claims));

@@ -110,6 +110,22 @@ public class DentistRepository : IDentistRepository
         return PagedListExtensions<Dentist>.Create(dbQuery, query.Page, query.PageSize);
     }
 
+    public PagedList<Appointment> GetAppointmentsList(int dentistId, QueryParameters query, DateOnly specificDate)
+    {
+        var appointments = _context.Appointments
+            .AsNoTracking()
+            .AsQueryable()
+            .AsSingleQuery()
+            .Include(x => x.Patient)
+            .Include(d => d.Dentist)
+                .ThenInclude(s => s.Specialization)
+            .Where(x => x.DentistId == dentistId
+            && x.PatientId != null
+            && DateOnly.FromDateTime(x.Date) == specificDate)
+            .OrderBy(x => x.Date);
+
+        return PagedListExtensions<Appointment>.Create(appointments, query.Page, query.PageSize);
+    }
 
     private static Expression<Func<Dentist, object>> GetSortColumn(QueryParameters query)
     {
