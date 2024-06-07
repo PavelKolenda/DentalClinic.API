@@ -59,7 +59,7 @@ public class DentistsService : IDentistsService
 
     public async Task<DentistDto> CreateAsync(DentistCreateDto dentistDto)
     {
-        var specialization = await _specializationsRepository.GetByName(dentistDto.Name);
+        var specialization = await _specializationsRepository.GetByNameAsync(dentistDto.Specialization);
 
         Dentist dentist = dentistDto.Adapt<Dentist>();
 
@@ -79,7 +79,7 @@ public class DentistsService : IDentistsService
     {
         Dentist dentistEntity = dentistDto.Adapt<Dentist>();
 
-        var specialization = await _specializationsRepository.GetByName(dentistDto.Specialization);
+        var specialization = await _specializationsRepository.GetByNameAsync(dentistDto.Specialization);
 
         dentistEntity.SpecializationId = specialization.Id;
 

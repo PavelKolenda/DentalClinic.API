@@ -9,7 +9,7 @@ public interface ISpecializationsRepository
     Task DeleteAsync(int id);
     IQueryable<Specialization> GetAll();
     Task<Specialization> GetByIdAsync(int id, bool trackChanges);
-    Task<Specialization> GetByName(string name);
+    Task<Specialization> GetByNameAsync(string name);
     PagedList<Specialization> GetPaged(QueryParameters query);
     Task UpdateAsync(int id, Specialization specialization);
 }
