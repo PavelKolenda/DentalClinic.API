@@ -119,23 +119,33 @@ public class DentistsService : IDentistsService
         await _dentistRepository.DeleteWorkingScheduleAsync(dentist, workingSchedule);
     }
 
-    public async Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId)
+    public async Task<WorkingScheduleDtoToReturn> GetWorkingScheduleAsync(int dentistId)
     {
         Dentist dentist = await GetDentistWithWorkingScheduleAsync(dentistId);
 
         var workingSchedule = dentist.WorkingSchedule.Adapt<List<WorkingScheduleDto>>()
             .OrderBy(x => DayOfWeekMap[x.WorkingDay]);
 
-        return workingSchedule;
+        WorkingScheduleDtoToReturn workingScheduleDto = new()
+        {
+            DentistName = dentist.Name,
+            DentistSurname = dentist.Surname,
+            DentistPatronymic = dentist.Patronymic,
+            WorkingSchedule = workingSchedule,
+        };
+
+        return workingScheduleDto;
     }
 
     private static readonly Dictionary<string, int> DayOfWeekMap = new()
     {
-         {"понедельник", 1},
-         {"вторник", 2},
-         {"среда", 3},
-         {"четверг", 4},
-         {"пятница", 5},
+        {"понедельник", 1},
+        {"вторник", 2},
+        {"среда", 3},
+        {"четверг", 4},
+        {"пятница", 5},
+        {"суббота", 6},
+        {"воскресенье", 7}
     };
 
     private async Task<Dentist> GetDentistWithWorkingScheduleAsync(int dentistId)

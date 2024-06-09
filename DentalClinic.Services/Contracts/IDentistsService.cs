@@ -14,6 +14,6 @@ public interface IDentistsService
     PagedList<AppointmentDto> GetAppointmentsList(QueryParameters query, DateOnly specificDate);
     Task<IEnumerable<DentistDto>> GetBySpecialization(int specializationId);
     PagedList<DentistDto> GetPaged(QueryParameters query);
-    Task<IEnumerable<WorkingScheduleDto>> GetWorkingScheduleAsync(int dentistId);
+    Task<WorkingScheduleDtoToReturn> GetWorkingScheduleAsync(int dentistId);
     Task UpdateAsync(DentistUpdateDto dentistDto, int id);
 }
