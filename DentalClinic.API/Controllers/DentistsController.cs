@@ -43,11 +43,11 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] DentistCreateDto dentistCreateDto)
+    public async Task<ActionResult<DentistDto>> Create([FromBody] DentistCreateDto dentistCreateDto)
     {
         var dentist = await _dentistsService.CreateAsync(dentistCreateDto);
 
-        return CreatedAtRoute(dentist, dentist.Id);
+        return CreatedAtRoute(new { id = dentist.Id }, dentist);
     }
 
     [HttpPut("{id:int}")]
