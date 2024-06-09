@@ -1,9 +1,9 @@
-﻿using DentalClinic.Models.Entities;
-using DentalClinic.Repository.Contracts.Queries;
+﻿using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs;
 using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
 
 using Microsoft.AspNetCore.Authorization;
@@ -67,7 +67,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpGet("{id:int}/schedule")]
-    public async Task<ActionResult<IEnumerable<WorkingSchedule>>> GetSchedule(int id)
+    public async Task<ActionResult<WorkingScheduleDtoToReturn>> GetSchedule(int id)
     {
         var schedule = await _dentistsService.GetWorkingScheduleAsync(id);
 
