@@ -21,9 +21,14 @@ public class WorkingScheduleRepository : IWorkingScheduleRepository
         return _context.WorkingSchedules.AsQueryable();
     }
 
-    public PagedList<WorkingSchedule> GetPaged(QueryParameters query)
+    public PagedList<WorkingSchedule> GetPaged(QueryParameters query, string? dayFilter)
     {
         var dbQuery = _context.WorkingSchedules.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(dayFilter))
+        {
+            dbQuery = dbQuery.Where(x => x.WorkingDay == dayFilter);
+        }
 
         return PagedListExtensions<WorkingSchedule>.Create(dbQuery, query.Page, query.PageSize);
     }

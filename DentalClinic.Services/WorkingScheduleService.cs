@@ -18,9 +18,9 @@ public class WorkingScheduleService : IWorkingScheduleService
         _workingScheduleRepository = workingScheduleService;
     }
 
-    public PagedList<WorkingScheduleDto> GetPaged(QueryParameters query)
+    public PagedList<WorkingScheduleDto> GetPaged(QueryParameters query, string? dayFilter)
     {
-        var wsPaged = _workingScheduleRepository.GetPaged(query);
+        var wsPaged = _workingScheduleRepository.GetPaged(query, dayFilter);
 
         var wsDto = wsPaged.Items.Adapt<List<WorkingScheduleDto>>();
 

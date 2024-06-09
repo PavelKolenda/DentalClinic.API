@@ -10,7 +10,7 @@ namespace DentalClinic.Repository.Contracts
         Task DeleteAsync(int id);
         IQueryable<WorkingSchedule> GetAll();
         Task<WorkingSchedule> GetById(int id);
-        PagedList<WorkingSchedule> GetPaged(QueryParameters query);
+        PagedList<WorkingSchedule> GetPaged(QueryParameters query, string? dayFilter);
         Task UpdateAsync(int id, WorkingSchedule workingSchedule);
     }
 }
