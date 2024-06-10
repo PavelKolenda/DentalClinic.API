@@ -31,7 +31,9 @@ public class PatientsRepository : IPatientsRepository
     }
     public PagedList<Patient> GetPaged(QueryParameters query)
     {
-        var dbQuery = _context.Patients.AsQueryable();
+        var dbQuery = _context.Patients.AsQueryable()
+            .Include(r => r.Roles)
+            .Where(x => x.Roles.Count == 1 && x.Roles.Any(r => r.Name == "Patient"));
 
         if (query.SortOrder is not null)
         {
