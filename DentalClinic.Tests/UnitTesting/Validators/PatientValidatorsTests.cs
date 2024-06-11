@@ -16,7 +16,9 @@ public class PatientValidatorsTests
             Patronymic = "",
             BirthDate = new DateOnly(1999, 1, 1),
             Email = "",
-            Password = ""
+            Password = "",
+            Address = "",
+            PhoneNumber = ""
         };
 
         PatientCreateDtoValidator validator = new();
@@ -26,6 +28,8 @@ public class PatientValidatorsTests
         validationResult.ShouldHaveValidationErrorFor(x => x.Surname);
         validationResult.ShouldHaveValidationErrorFor(x => x.Email);
         validationResult.ShouldHaveValidationErrorFor(x => x.Password);
+        validationResult.ShouldHaveValidationErrorFor(x => x.Address);
+        validationResult.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
     }
 
     [Fact]
@@ -38,7 +42,9 @@ public class PatientValidatorsTests
             Patronymic = "Тест",
             BirthDate = new DateOnly(2012, 12, 12),
             Email = "test@gmail.com",
-            Password = "testtesttest"
+            Password = "testtesttest",
+            PhoneNumber = "+375296589765",
+            Address = "Соломовая 6a"
         };
 
         PatientCreateDtoValidator validator = new();
