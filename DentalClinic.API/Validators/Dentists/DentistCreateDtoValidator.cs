@@ -23,5 +23,16 @@ public class DentistCreateDtoValidator : AbstractValidator<DentistCreateDto>
 
         RuleFor(x => x.Specialization)
             .NotEmpty();
+
+        RuleFor(x => x.Email)
+            .EmailAddress()
+            .NotEmpty();
+
+        RuleFor(x => x.Password)
+            .MinimumLength(8)
+            .NotEmpty();
+
+        RuleFor(x => x.BirthDate)
+            .NotEmpty();
     }
 }
