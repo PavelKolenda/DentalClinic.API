@@ -2,6 +2,7 @@
 using DentalClinic.Models.Exceptions;
 using DentalClinic.Repository.Contracts;
 using DentalClinic.Repository.Contracts.Queries;
+using DentalClinic.Services.Auth;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
@@ -20,16 +21,25 @@ public class DentistsService : IDentistsService
     private readonly ISpecializationsRepository _specializationsRepository;
     private readonly IWorkingScheduleRepository _workingScheduleRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IRoleRepository _roleRepository;
+    private readonly IPatientsRepository _patientsRepository;
+    private readonly IPasswordHasher _passwordHasher;
 
     public DentistsService(IDentistRepository dentistRepository,
                            ISpecializationsRepository specializationsRepository,
                            IWorkingScheduleRepository workingScheduleRepository,
-                           IHttpContextAccessor httpContextAccessor)
+                           IHttpContextAccessor httpContextAccessor,
+                           IRoleRepository roleRepository,
+                           IPatientsRepository patientsRepository,
+                           IPasswordHasher passwordHasher)
     {
         _dentistRepository = dentistRepository;
         _specializationsRepository = specializationsRepository;
         _workingScheduleRepository = workingScheduleRepository;
         _httpContextAccessor = httpContextAccessor;
+        _roleRepository = roleRepository;
+        _patientsRepository = patientsRepository;
+        _passwordHasher = passwordHasher;
     }
 
     public PagedList<DentistDto> GetPaged(QueryParameters query)
@@ -59,15 +69,42 @@ public class DentistsService : IDentistsService
 
     public async Task<DentistDto> CreateAsync(DentistCreateDto dentistDto)
     {
+        if (await IsEmailExists(dentistDto.Email))
+        {
+            throw new InvalidRequestException($"Provided Email: {dentistDto.Email} already exists");
+        }
+
         var specialization = await _specializationsRepository.GetByNameAsync(dentistDto.Specialization);
+        var role = await _roleRepository.GetByName("Dentist");
 
         Dentist dentist = dentistDto.Adapt<Dentist>();
 
         await _dentistRepository.CreateAsync(dentist, specialization.Id);
 
+        Patient patient = new()
+        {
+            Name = dentist.Name,
+            Surname = dentist.Surname,
+            Patronymic = dentist.Patronymic,
+            Email = dentistDto.Email,
+            PasswordHash = _passwordHasher.Generate(dentistDto.Password),
+            BirthDate = dentistDto.BirthDate
+        };
+
+        await _patientsRepository.CreateAsync(patient, role);
+
         DentistDto dentistToReturn = dentist.Adapt<DentistDto>();
 
         return dentistToReturn;
+    }
+
+    private async Task<bool> IsEmailExists(string email)
+    {
+        return await _patientsRepository
+            .GetAll()
+            .Select(e => e.Email)
+            .AsNoTracking()
+            .AnyAsync(p => p == email);
     }
 
     public async Task DeleteAsync(int id)
