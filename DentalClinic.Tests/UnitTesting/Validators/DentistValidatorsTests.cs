@@ -19,8 +19,11 @@ public class DentistValidatorsTests
             Name = "",
             Surname = "",
             Patronymic = "",
-            CabinetNumber = -12,
-            Specialization = ""
+            CabinetNumber = 0,
+            Specialization = "",
+            Email = "",
+            Password = "",
+            BirthDate = new DateOnly(1900, 1, 1)
         };
 
         DentistCreateDtoValidator validator = new();
@@ -30,6 +33,9 @@ public class DentistValidatorsTests
         validationResult.ShouldHaveValidationErrorFor(x => x.Surname);
         validationResult.ShouldHaveValidationErrorFor(x => x.CabinetNumber);
         validationResult.ShouldHaveValidationErrorFor(x => x.Specialization);
+        validationResult.ShouldHaveValidationErrorFor(x => x.Email);
+        validationResult.ShouldHaveValidationErrorFor(x => x.Password);
+        validationResult.ShouldHaveValidationErrorFor(x => x.BirthDate);
     }
 
     [Fact]
@@ -41,7 +47,10 @@ public class DentistValidatorsTests
             Surname = "test",
             Patronymic = "test",
             CabinetNumber = 10,
-            Specialization = "test"
+            Specialization = "test",
+            Email = "test@gmail.com",
+            Password = "testgmailcom",
+            BirthDate = new DateOnly(1999, 1, 1)
         };
 
         DentistCreateDtoValidator validator = new();

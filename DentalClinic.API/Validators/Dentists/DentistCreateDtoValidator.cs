@@ -33,6 +33,25 @@ public class DentistCreateDtoValidator : AbstractValidator<DentistCreateDto>
             .NotEmpty();
 
         RuleFor(x => x.BirthDate)
+            .Must(BeMoreThan18LessThan60)
             .NotEmpty();
+    }
+
+    private bool BeMoreThan18LessThan60(DateOnly birthDate)
+    {
+        if (birthDate.ToDateTime(new TimeOnly(0, 0, 0)) >= DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        DateOnly currentDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        int age = currentDate.Year - birthDate.Year;
+
+        if (age >= 18 && age < 60)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

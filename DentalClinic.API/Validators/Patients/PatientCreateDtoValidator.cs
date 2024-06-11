@@ -30,6 +30,14 @@ public class PatientCreateDtoValidator : AbstractValidator<PatientCreateDto>
             .NotEmpty()
             .Must(BeLess18)
             .WithMessage("Patient must be less than 18 years old.");
+
+        RuleFor(x => x.Address)
+            .NotEmpty();
+
+        RuleFor(x => x.PhoneNumber)
+            .NotEmpty()
+            .Matches(@"^\+375\d{9}$")
+            .MaximumLength(13);
     }
 
     private bool BeLess18(DateOnly birthDate)
