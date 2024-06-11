@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -41,5 +42,12 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
                 l => l.HasOne<Role>().WithMany().HasForeignKey(r => r.RoleId),
                 r => r.HasOne<Patient>().WithMany().HasForeignKey(p => p.PatientId)
             );
+
+        builder.Property(p => p.PhoneNumber)
+            .HasMaxLength(13)
+            .IsRequired();
+
+        builder.Property(p => p.Address)
+            .IsRequired();
     }
 }
