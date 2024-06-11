@@ -98,6 +98,15 @@ public class PatientsRepository : IPatientsRepository
         return patient;
     }
 
+    public async Task<Patient> CreateAsync(Patient patient, Role role)
+    {
+        patient.Roles = [role];
+        await _context.Patients.AddAsync(patient);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Create Patient with Id:{Id}", patient.Id);
+        return patient;
+    }
+
     public async Task DeleteAsync(int id)
     {
         await _context.Patients.Where(p => p.Id == id).ExecuteDeleteAsync();
