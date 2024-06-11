@@ -123,6 +123,8 @@ public class PatientsRepository : IPatientsRepository
             .SetProperty(p => p.BirthDate, patient.BirthDate)
             .SetProperty(p => p.Email, patient.Email)
             .SetProperty(p => p.PasswordHash, patient.PasswordHash)
+            .SetProperty(p => p.PhoneNumber, patient.PhoneNumber)
+            .SetProperty(p => p.Address, patient.Address)
             );
 
         await _context.SaveChangesAsync();
