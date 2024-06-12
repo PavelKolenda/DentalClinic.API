@@ -82,12 +82,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> Login(PatientLoginDto patientLoginDto)
     {
-        Patient? patient = await AuthenticateAsync(patientLoginDto.Email, patientLoginDto.Password);
-
-        if (patient == null)
-        {
-            throw new InvalidRequestException("User with provided credentials don't exists");
-        }
+        Patient patient = await AuthenticateAsync(patientLoginDto.Email, patientLoginDto.Password);
 
         var roles = await GetRolesAsync(patient.Id);
 
@@ -145,14 +140,14 @@ public class AuthService : IAuthService
         return authResponse;
     }
 
-    private async Task<Patient?> AuthenticateAsync(string email, string password)
+    private async Task<Patient> AuthenticateAsync(string email, string password)
     {
         var patient = await _patientsRepository.GetAll()
             .FirstOrDefaultAsync(p => p.Email == email);
 
-        if (!_passwordHasher.Verify(password, patient.PasswordHash) || patient is null)
+        if (patient == null || !_passwordHasher.Verify(password, patient.PasswordHash))
         {
-            return null;
+            throw new InvalidRequestException("User with provided credentials don't exists");
         }
 
         return patient;
