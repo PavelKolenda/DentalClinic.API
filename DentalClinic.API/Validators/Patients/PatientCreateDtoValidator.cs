@@ -35,14 +35,12 @@ public class PatientCreateDtoValidator : AbstractValidator<PatientCreateDto>
             .NotEmpty();
 
         RuleFor(x => x.PhoneNumber)
-            .NotEmpty()
-            .Matches(@"^\+375\d{9}$")
-            .MaximumLength(13);
+            .NotEmpty();
     }
 
     private bool BeLess18(DateOnly birthDate)
     {
-        if (birthDate.ToDateTime(new TimeOnly(0, 0, 0)) >= DateTime.UtcNow)
+        if (birthDate >= DateOnly.FromDateTime(DateTime.UtcNow))
         {
             return false;
         }
