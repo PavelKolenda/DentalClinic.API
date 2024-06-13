@@ -34,6 +34,10 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
 
         builder.HasMany(p => p.Appointments)
             .WithOne(a => a.Patient)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasMany(p => p.Notifications)
+            .WithOne(p => p.Patient)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(p => p.Roles)
