@@ -55,6 +55,10 @@ builder.Services.AddScoped<ISpecializationsService, SpecializationsService>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IDentistsService, DentistsService>();
 
+builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
+builder.Services.AddScoped<INotificationsSenderService, AppNotificationsSender>();
+
 builder.Services.AddScoped<IWorkingScheduleRepository, WorkingScheduleRepository>();
 builder.Services.AddScoped<IWorkingScheduleService, WorkingScheduleService>();
 
