@@ -13,7 +13,9 @@ public class MappingConfig
     {
         #region Patients
         TypeAdapterConfig<PatientCreateDto, Patient>.NewConfig()
-            .Map(dest => dest.PasswordHash, src => src.Password);
+            .Map(dest => dest.PasswordHash, src => src.Password)
+            .Map(dest => dest.PhoneNumber, src => src.PhoneNumber)
+            .Map(dest => dest.Address, src => src.Address);
 
         TypeAdapterConfig<Patient, PatientDto>.NewConfig();
 
