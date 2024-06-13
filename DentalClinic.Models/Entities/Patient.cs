@@ -12,4 +12,5 @@ public class Patient
     public string? Address { get; set; }
     public ICollection<Appointment> Appointments { get; set; }
     public ICollection<Role> Roles { get; set; }
+    public ICollection<Notification> Notifications { get; set; }
 }
