@@ -19,5 +19,8 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
         builder.Property(n => n.Text)
             .HasMaxLength(1250)
             .IsRequired();
+
+        builder.Property(x => x.SandedAt)
+            .HasColumnType("timestamp without time zone");
     }
 }
