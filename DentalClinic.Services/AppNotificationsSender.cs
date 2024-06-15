@@ -20,7 +20,7 @@ public class AppNotificationsSender : INotificationsSenderService
     public async Task SendToAllPatientsAsync(NotificationCreateDto notificationDto)
     {
         var patientsId = await _patientsRepository.GetAll().Select(x => x.Id).ToListAsync();
-        DateTime now = DateTime.Now;
+        DateTime now = DateTime.UtcNow.AddHours(3);
 
         Notification notification = new()
         {
