@@ -21,7 +21,7 @@ public abstract class CreateAppointmentsJobBase
         {
             Appointment appointment = new()
             {
-                Date = new DateTime(DateOnly.FromDateTime(appointmentDate.Date), appointmentTime.Time).ToUniversalTime(),
+                Date = new DateTime(DateOnly.FromDateTime(appointmentDate.Date), appointmentTime.Time),
                 DentistId = dentistId,
             };
 
