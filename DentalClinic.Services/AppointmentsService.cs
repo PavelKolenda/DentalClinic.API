@@ -114,7 +114,7 @@ public class AppointmentsService : IAppointmentsService
             PatientSurname = appointment.Patient.Surname,
             PatientPatronymic = appointment.Patient.Patronymic,
             AppointmentDate = DateOnly.FromDateTime(appointment.Date),
-            AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
+            AppointmentTime = TimeOnly.FromDateTime(appointment.Date)
         };
 
         return createdAppointment;
