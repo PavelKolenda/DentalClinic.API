@@ -3,6 +3,7 @@
 using DentalClinic.API.Extensions.ErrorHandling;
 using DentalClinic.Repository;
 using DentalClinic.Services.Jobs;
+using DentalClinic.Services.Jobs.Notifications;
 using DentalClinic.Services.Mappings;
 
 using FluentValidation;
@@ -49,6 +50,21 @@ public static class ServiceExtensions
             //    .ForJob(createAppointmentsForMonth)
             //    .WithIdentity("CreateAppointmentsForMonth-trigger")
             //    .WithSimpleSchedule(schedule => schedule.WithRepeatCount(0)));
+
+            var sendNotificationsAboutAppointmentInTwoHours = new JobKey("SendNotificationsAboutAppointmentInTwoHoursJob");
+
+            opt.AddJob<SendNotificationsAboutAppointmentInTwoHoursJob>(opt =>
+            {
+                opt.WithIdentity(sendNotificationsAboutAppointmentInTwoHours);
+            });
+
+            opt.AddTrigger(opt =>
+            {
+                opt
+                .ForJob(sendNotificationsAboutAppointmentInTwoHours)
+                .WithIdentity("SendNotificationsAboutAppointmentInTwoHoursJob")
+                .WithCronSchedule("0 0/30 * 1/1 * ? *");
+            });
         });
     }
 
