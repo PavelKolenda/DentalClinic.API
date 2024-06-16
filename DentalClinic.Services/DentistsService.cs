@@ -223,7 +223,7 @@ public class DentistsService : IDentistsService
                 PatientSurname = appointment.Patient.Surname,
                 PatientPatronymic = appointment.Patient.Patronymic,
                 AppointmentDate = DateOnly.FromDateTime(appointment.Date),
-                AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
+                AppointmentTime = TimeOnly.FromDateTime(appointment.Date)
             });
         }
 
@@ -232,14 +232,14 @@ public class DentistsService : IDentistsService
 
     public int GetDentistIdFromClaims()
     {
-        var patientIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("dentistId");
+        var dentistIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("dentistId");
 
-        if (patientIdClaim == null)
+        if (dentistIdClaim == null)
         {
             throw new UnauthorizedAccessException("Dentist isn't authorized");
         }
 
-        int patientId = Convert.ToInt32(patientIdClaim.Value);
+        int patientId = Convert.ToInt32(dentistIdClaim.Value);
         return patientId;
     }
 }
