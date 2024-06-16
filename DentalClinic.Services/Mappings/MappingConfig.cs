@@ -1,5 +1,6 @@
 ﻿using DentalClinic.Models.Entities;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.DTOs.News;
 using DentalClinic.Shared.DTOs.Patients;
 using DentalClinic.Shared.DTOs.Specializations;
 using DentalClinic.Shared.DTOs.WorkingSchedules;
@@ -43,6 +44,12 @@ public class MappingConfig
         TypeAdapterConfig<Specialization, SpecializationDto>.NewConfig();
         TypeAdapterConfig<SpecializationCreateDto, Specialization>.NewConfig();
         TypeAdapterConfig<SpecializationUpdateDto, Specialization>.NewConfig();
+        #endregion
+
+        #region News
+        TypeAdapterConfig<News, NewsDto>.NewConfig();
+        TypeAdapterConfig<NewsCreateDto, News>.NewConfig();
+        TypeAdapterConfig<NewsUpdateDto, News>.NewConfig();
         #endregion
     }
 }
