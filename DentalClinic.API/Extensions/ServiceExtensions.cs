@@ -65,6 +65,22 @@ public static class ServiceExtensions
                 .WithIdentity("SendNotificationsAboutAppointmentInTwoHoursJob")
                 .WithCronSchedule("0 0/30 * 1/1 * ? *");
             });
+
+            var sendNotificationsOneDayBeforeAppointment = new JobKey("SendNotificationsOneDayBeforeAppointmentJob");
+
+            opt.AddJob<SendNotificationsOneDayBeforeAppointmentJob>(opt =>
+            {
+                opt.WithIdentity(sendNotificationsOneDayBeforeAppointment);
+            });
+
+            opt.AddTrigger(opt =>
+            {
+                opt
+                .ForJob(sendNotificationsOneDayBeforeAppointment)
+                .WithIdentity("SendNotificationsOneDayBeforeAppointmentJob")
+                .WithCronSchedule("0 0 13 * * ?");
+            });
+
         });
     }
 
