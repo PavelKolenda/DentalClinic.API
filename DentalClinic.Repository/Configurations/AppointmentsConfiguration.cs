@@ -9,5 +9,8 @@ public class AppointmentsConfiguration : IEntityTypeConfiguration<Appointment>
     public void Configure(EntityTypeBuilder<Appointment> builder)
     {
         builder.Property(x => x.PatientId).IsRequired(false);
+
+        builder.Property(x => x.Date)
+            .HasColumnType("timestamp without time zone");
     }
 }

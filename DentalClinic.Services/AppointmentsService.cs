@@ -47,7 +47,7 @@ public class AppointmentsService : IAppointmentsService
                 AvailableAppointments = g.Select(a => new AvailableAppointment
                 {
                     AppointmentId = a.Id,
-                    AvailableTime = TimeOnly.FromDateTime(a.Date).AddHours(3),
+                    AvailableTime = TimeOnly.FromDateTime(a.Date),
                 }),
                 Count = g.Count()
             });
