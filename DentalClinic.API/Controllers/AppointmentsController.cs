@@ -12,9 +12,11 @@ namespace DentalClinic.API.Controllers;
 public class AppointmentsController : ControllerBase
 {
     private readonly IAppointmentsService _appointmentsService;
-    public AppointmentsController(IAppointmentsService appointmentsService)
+    private readonly IAppointmentInfoDownload _appointmentInfoDownload;
+    public AppointmentsController(IAppointmentsService appointmentsService, IAppointmentInfoDownload appointmentInfoDownload)
     {
         _appointmentsService = appointmentsService;
+        _appointmentInfoDownload = appointmentInfoDownload;
     }
 
     [HttpPost("{dentistId:int}/{appointmentId:int}")]
@@ -42,5 +44,13 @@ public class AppointmentsController : ControllerBase
         await _appointmentsService.CancelAppointmentAsync(appointmentId);
 
         return NoContent();
+    }
+
+    [HttpGet("{appointmentId:int}/download")]
+    public async Task<IActionResult> DownloadAppointmentInfo(int appointmentId)
+    {
+        var pdfBytes = await _appointmentInfoDownload.Download(appointmentId);
+
+        return File(pdfBytes, "application/pdf", "appointment.pdf");
     }
 }
