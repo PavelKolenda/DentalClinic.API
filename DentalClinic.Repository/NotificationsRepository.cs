@@ -17,7 +17,7 @@ public class NotificationsRepository : INotificationsRepository
     {
         var dbQuery = _context.Notifications.AsQueryable()
             .Where(x => x.PatientId == patientId)
-            .OrderBy(x => x.SandedAt);
+            .OrderByDescending(x => x.SandedAt);
 
         return PagedListExtensions<Notification>.Create(dbQuery, query.Page, query.PageSize);
     }
