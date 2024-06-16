@@ -62,6 +62,9 @@ builder.Services.AddScoped<INotificationsSenderService, AppNotificationsSender>(
 builder.Services.AddScoped<IWorkingScheduleRepository, WorkingScheduleRepository>();
 builder.Services.AddScoped<IWorkingScheduleService, WorkingScheduleService>();
 
+builder.Services.AddScoped<INewsRepository, NewsRepository>();
+builder.Services.AddScoped<INewsService, NewsService>();
+
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
