@@ -115,17 +115,22 @@ public class PatientsRepository : IPatientsRepository
 
     public async Task UpdateAsync(int id, Patient patient)
     {
-        await _context.Patients.Where(p => p.Id == id)
-            .ExecuteUpdateAsync(s => s
-            .SetProperty(p => p.Name, patient.Name)
-            .SetProperty(p => p.Surname, patient.Surname)
-            .SetProperty(p => p.Patronymic, patient.Patronymic)
-            .SetProperty(p => p.BirthDate, patient.BirthDate)
-            .SetProperty(p => p.Email, patient.Email)
-            .SetProperty(p => p.PasswordHash, patient.PasswordHash)
-            .SetProperty(p => p.PhoneNumber, patient.PhoneNumber)
-            .SetProperty(p => p.Address, patient.Address)
-            );
+        var patientEntity = await _context.Patients.FirstOrDefaultAsync(x => x.Id == id);
+
+        patientEntity.Name = patient.Name;
+        patientEntity.Surname = patient.Surname;
+        patientEntity.Patronymic = patient.Patronymic;
+        patientEntity.Address = patient.Address;
+        patientEntity.Email = patient.Email;
+        patientEntity.PhoneNumber = patient.PhoneNumber;
+        patientEntity.BirthDate = patient.BirthDate;
+
+        if (!string.IsNullOrEmpty(patient.PasswordHash) && patient.PasswordHash != null)
+        {
+            patientEntity.PasswordHash = patient.PasswordHash;
+        }
+
+        await _context.SaveChangesAsync();
 
         await _context.SaveChangesAsync();
 
