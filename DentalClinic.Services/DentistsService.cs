@@ -88,7 +88,9 @@ public class DentistsService : IDentistsService
             Patronymic = dentist.Patronymic,
             Email = dentistDto.Email,
             PasswordHash = _passwordHasher.Generate(dentistDto.Password),
-            BirthDate = dentistDto.BirthDate
+            BirthDate = dentistDto.BirthDate,
+            PhoneNumber = dentistDto.PhoneNumber,
+            Address = dentistDto.Address
         };
 
         await _patientsRepository.CreateAsync(patient, role);
@@ -112,8 +114,71 @@ public class DentistsService : IDentistsService
         await _dentistRepository.DeleteAsync(id);
     }
 
+    public async Task<DentistDtoAsUser> GetDentistAsync(int id)
+    {
+        var dentist = await _dentistRepository.GetAll()
+            .Include(s => s.Specialization)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        var patient = await _patientsRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Name == dentist.Name
+            && x.Surname == dentist.Surname
+            && x.Patronymic == dentist.Patronymic);
+
+        if (patient == null)
+        {
+            throw new InvalidRequestException("");
+        }
+
+        DentistDtoAsUser dentistDtoAsUser = new()
+        {
+            Name = dentist.Name,
+            Surname = dentist.Surname,
+            Patronymic = dentist.Patronymic,
+            CabinetNumber = dentist.CabinetNumber,
+            Specialization = dentist.Specialization.Name,
+            BirthDate = patient.BirthDate,
+            Email = patient.Email,
+            Address = patient.Address,
+            PhoneNumber = patient.PhoneNumber
+        };
+
+        return dentistDtoAsUser;
+    }
+
     public async Task UpdateAsync(DentistUpdateDto dentistDto, int id)
     {
+        var dentist = await _dentistRepository.GetByIdAsync(id, false);
+
+        var patient = await _patientsRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Name == dentist.Name
+            && x.Surname == dentist.Surname
+            && x.Patronymic == dentist.Patronymic);
+
+        if (patient == null)
+        {
+            throw new InvalidRequestException("");
+        }
+
+
+        Patient patientToUpdate = new()
+        {
+            Name = dentistDto.Name,
+            Surname = dentistDto.Surname,
+            Patronymic = dentistDto.Patronymic,
+            Email = dentistDto.Email,
+            BirthDate = dentistDto.BirthDate,
+            PhoneNumber = dentistDto.PhoneNumber,
+            Address = dentistDto.Address
+        };
+
+        if (!string.IsNullOrWhiteSpace(dentistDto.Password))
+        {
+            patientToUpdate.PasswordHash = _passwordHasher.Generate(dentistDto.Password);
+        }
+
+        await _patientsRepository.UpdateAsync(patient.Id, patientToUpdate);
+
         Dentist dentistEntity = dentistDto.Adapt<Dentist>();
 
         var specialization = await _specializationsRepository.GetByNameAsync(dentistDto.Specialization);
