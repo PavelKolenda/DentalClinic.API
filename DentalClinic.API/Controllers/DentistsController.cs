@@ -98,4 +98,13 @@ public class DentistsController : ControllerBase
 
         return Ok(appointments);
     }
+
+    [HttpGet("{dentistId:int}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<DentistDtoAsUser>> GetDentist(int dentistId)
+    {
+        var dentist = await _dentistsService.GetDentistAsync(dentistId);
+
+        return Ok(dentist);
+    }
 }
