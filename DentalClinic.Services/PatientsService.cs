@@ -63,8 +63,6 @@ public class PatientsService : IPatientsService
     {
         Patient toUpdate = patientUpdateDto.Adapt<Patient>();
 
-        toUpdate.PasswordHash = _passwordHasher.Generate(patientUpdateDto.Password);
-
         await _patientsRepository.UpdateAsync(id, toUpdate);
 
         _logger.LogInformation("Update patient with Id:{id}", id);

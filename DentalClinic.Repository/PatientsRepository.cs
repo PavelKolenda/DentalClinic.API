@@ -132,8 +132,6 @@ public class PatientsRepository : IPatientsRepository
 
         await _context.SaveChangesAsync();
 
-        await _context.SaveChangesAsync();
-
         _logger.LogInformation("Updated Patient with Id:{id}", id);
     }
 
