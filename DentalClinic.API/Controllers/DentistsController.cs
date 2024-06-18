@@ -43,6 +43,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<DentistDto>> Create([FromBody] DentistCreateDto dentistCreateDto)
     {
         var dentist = await _dentistsService.CreateAsync(dentistCreateDto);
@@ -51,6 +52,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Update(int id, [FromBody] DentistUpdateDto dentistUpdateDto)
     {
         await _dentistsService.UpdateAsync(dentistUpdateDto, id);
@@ -59,6 +61,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(int id)
     {
         await _dentistsService.DeleteAsync(id);
@@ -75,6 +78,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPost("{id:int}/schedule/{scheduleId:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> AddSchedule(int id, int scheduleId)
     {
         await _dentistsService.AddWorkingSchedule(id, scheduleId);
@@ -82,6 +86,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpDelete("{id:int}/schedule/{scheduleId:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteSchedule(int id, int scheduleId)
     {
         await _dentistsService.DeleteWorkingSchedule(id, scheduleId);
