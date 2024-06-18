@@ -31,7 +31,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [Authorize]
+    [Authorize(Roles = "Patient")]
     public async Task<ActionResult<PatientDto>> GetByIdAsync(int id)
     {
         PatientDto patient = await _patientsService.GetByIdAsync(id);
@@ -49,7 +49,6 @@ public class PatientsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    [Authorize(Roles = "Admin")]
     [Authorize(Roles = "Patient")]
     public async Task<ActionResult<PatientUpdateDto>> UpdateAsync(int id, [FromBody] PatientUpdateDto patientUpdateDto)
     {
