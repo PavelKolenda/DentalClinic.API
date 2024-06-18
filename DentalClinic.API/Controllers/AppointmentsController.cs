@@ -28,6 +28,15 @@ public class AppointmentsController : ControllerBase
         return Ok(appointment);
     }
 
+    [HttpPost("{patientId:int}/{appointmentId:int}/reenrollment")]
+    [Authorize(Roles = "Dentist")]
+    public async Task<ActionResult<AppointmentDto>> PatientReenrollment(int patientId, int appointmentId)
+    {
+        var appointment = await _appointmentsService.PatientReenrollment(patientId, appointmentId);
+
+        return Ok(appointment);
+    }
+
     [HttpGet("{appointmentId:int}")]
     [Authorize(Roles = "Patient")]
     public async Task<ActionResult<AppointmentDto>> GetAppointment(int appointmentId)

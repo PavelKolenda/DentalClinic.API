@@ -287,11 +287,13 @@ public class DentistsService : IDentistsService
             appointmentsDto.Add(new AppointmentDto()
             {
                 AppointmentId = appointment.Id,
+                DentistId = dentistId,
                 DentistName = appointment.Dentist.Name,
                 DentistSurname = appointment.Dentist.Surname,
                 DentistPatronymic = appointment.Dentist.Patronymic,
                 DentistCabinetNumber = appointment.Dentist.CabinetNumber,
                 DentistSpecialization = appointment.Dentist.Specialization.Name,
+                PatientId = appointment.PatientId,
                 PatientName = appointment.Patient.Name,
                 PatientSurname = appointment.Patient.Surname,
                 PatientPatronymic = appointment.Patient.Patronymic,

@@ -45,12 +45,12 @@ public class WorkingScheduleService : IWorkingScheduleService
             throw new InvalidRequestException("Invalid working day");
         }
 
-        var isWorkingExists = _workingScheduleRepository.GetAll()
+        var isWorkingExists = await _workingScheduleRepository.GetAll()
             .FirstOrDefaultAsync(x => x.Start == workingScheduleCreateDto.Start
             && x.End == workingScheduleCreateDto.End
             && x.WorkingDay == workingScheduleCreateDto.WorkingDay);
 
-        if (isWorkingExists == null)
+        if (isWorkingExists != null)
         {
             throw new InvalidRequestException("Provided working schedule already exists");
         }
