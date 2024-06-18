@@ -26,7 +26,9 @@ public class AppointmentsRepository : IAppointmentsRepository
 
     public async Task<IEnumerable<Appointment>> GetAvailableAsync(int dentistId)
     {
-        DateTime today = DateTime.UtcNow;
+        var dateOnly = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        DateTime today = dateOnly.ToDateTime(new TimeOnly(DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, 0)).AddHours(3);
 
         var appointments = await _context.Appointments
             .AsNoTracking()

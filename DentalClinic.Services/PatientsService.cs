@@ -107,7 +107,7 @@ public class PatientsService : IPatientsService
                 DentistPatronymic = appointment.Dentist.Patronymic,
                 DentistCabinetNumber = appointment.Dentist.CabinetNumber,
                 DentistSpecialization = appointment.Dentist.Specialization.Name,
-                PatientName = appointment.Patient.Name,
+                PatientName = appointment.Patient!.Name,
                 PatientSurname = appointment.Patient.Surname,
                 PatientPatronymic = appointment.Patient.Patronymic,
                 AppointmentDate = DateOnly.FromDateTime(appointment.Date),

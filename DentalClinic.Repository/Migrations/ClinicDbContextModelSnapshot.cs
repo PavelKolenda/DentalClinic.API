@@ -31,7 +31,7 @@ namespace DentalClinic.Repository.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("DentistId")
                         .HasColumnType("integer");
@@ -84,6 +84,63 @@ namespace DentalClinic.Repository.Migrations
                     b.ToTable("Dentists");
                 });
 
+            modelBuilder.Entity("DentalClinic.Models.Entities.News", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("News");
+                });
+
+            modelBuilder.Entity("DentalClinic.Models.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Article")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SandedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(1250)
+                        .HasColumnType("character varying(1250)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("DentalClinic.Models.Entities.Patient", b =>
                 {
                     b.Property<int>("Id")
@@ -91,6 +148,10 @@ namespace DentalClinic.Repository.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
@@ -112,6 +173,11 @@ namespace DentalClinic.Repository.Migrations
                         .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("character varying(75)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
 
                     b.Property<string>("Surname")
                         .IsRequired()
@@ -224,7 +290,7 @@ namespace DentalClinic.Repository.Migrations
                     b.HasOne("DentalClinic.Models.Entities.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Dentist");
 
@@ -240,6 +306,17 @@ namespace DentalClinic.Repository.Migrations
                         .IsRequired();
 
                     b.Navigation("Specialization");
+                });
+
+            modelBuilder.Entity("DentalClinic.Models.Entities.Notification", b =>
+                {
+                    b.HasOne("DentalClinic.Models.Entities.Patient", "Patient")
+                        .WithMany("Notifications")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("DentalClinic.Models.Entities.PatientRole", b =>
@@ -280,6 +357,8 @@ namespace DentalClinic.Repository.Migrations
             modelBuilder.Entity("DentalClinic.Models.Entities.Patient", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("DentalClinic.Models.Entities.Specialization", b =>

@@ -8,6 +8,8 @@ using DentalClinic.Services.Options;
 
 using Quartz;
 
+using QuestPDF.Infrastructure;
+
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,11 +57,22 @@ builder.Services.AddScoped<ISpecializationsService, SpecializationsService>();
 builder.Services.AddScoped<IDentistRepository, DentistRepository>();
 builder.Services.AddScoped<IDentistsService, DentistsService>();
 
+builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
+builder.Services.AddScoped<INotificationsService, NotificationsService>();
+builder.Services.AddScoped<INotificationsSenderService, AppNotificationsSender>();
+
 builder.Services.AddScoped<IWorkingScheduleRepository, WorkingScheduleRepository>();
 builder.Services.AddScoped<IWorkingScheduleService, WorkingScheduleService>();
 
+builder.Services.AddScoped<INewsRepository, NewsRepository>();
+builder.Services.AddScoped<INewsService, NewsService>();
+
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+builder.Services.AddScoped<IAppointmentInfoDownload, AppointmentInfoDownloadPdf>();
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var app = builder.Build();
 

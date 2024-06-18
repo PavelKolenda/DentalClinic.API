@@ -65,9 +65,9 @@ public class SpecializationsRepository : ISpecializationsRepository
         await _context.SaveChangesAsync();
     }
 
-    public Task<Specialization> GetByName(string name)
+    public async Task<Specialization> GetByNameAsync(string name)
     {
-        var specialization = _context.Specializations.FirstOrDefaultAsync(x => x.Name == name);
+        var specialization = await _context.Specializations.FirstOrDefaultAsync(x => x.Name == name);
 
         if (specialization is null)
         {

@@ -6,6 +6,7 @@ namespace DentalClinic.Repository.Contracts;
 public interface IPatientsRepository
 {
     Task<Patient> CreateAsync(Patient patient);
+    Task<Patient> CreateAsync(Patient patient, Role role);
     Task DeleteAsync(int id);
     IQueryable<Patient> GetAll();
     PagedList<Appointment> GetAllAppointments(int patientId, QueryParameters query);

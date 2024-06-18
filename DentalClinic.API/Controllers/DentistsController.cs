@@ -1,9 +1,9 @@
-﻿using DentalClinic.Models.Entities;
-using DentalClinic.Repository.Contracts.Queries;
+﻿using DentalClinic.Repository.Contracts.Queries;
 using DentalClinic.Services.Contracts;
 using DentalClinic.Shared.DTOs;
 using DentalClinic.Shared.DTOs.Appointments;
 using DentalClinic.Shared.DTOs.Dentists;
+using DentalClinic.Shared.DTOs.WorkingSchedules;
 using DentalClinic.Shared.Pagination;
 
 using Microsoft.AspNetCore.Authorization;
@@ -43,14 +43,16 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] DentistCreateDto dentistCreateDto)
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<DentistDto>> Create([FromBody] DentistCreateDto dentistCreateDto)
     {
         var dentist = await _dentistsService.CreateAsync(dentistCreateDto);
 
-        return CreatedAtRoute(dentist, dentist.Id);
+        return CreatedAtRoute(new { id = dentist.Id }, dentist);
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Update(int id, [FromBody] DentistUpdateDto dentistUpdateDto)
     {
         await _dentistsService.UpdateAsync(dentistUpdateDto, id);
@@ -59,6 +61,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(int id)
     {
         await _dentistsService.DeleteAsync(id);
@@ -67,7 +70,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpGet("{id:int}/schedule")]
-    public async Task<ActionResult<IEnumerable<WorkingSchedule>>> GetSchedule(int id)
+    public async Task<ActionResult<WorkingScheduleDtoToReturn>> GetSchedule(int id)
     {
         var schedule = await _dentistsService.GetWorkingScheduleAsync(id);
 
@@ -75,6 +78,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpPost("{id:int}/schedule/{scheduleId:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> AddSchedule(int id, int scheduleId)
     {
         await _dentistsService.AddWorkingSchedule(id, scheduleId);
@@ -82,6 +86,7 @@ public class DentistsController : ControllerBase
     }
 
     [HttpDelete("{id:int}/schedule/{scheduleId:int}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteSchedule(int id, int scheduleId)
     {
         await _dentistsService.DeleteWorkingSchedule(id, scheduleId);
@@ -97,5 +102,14 @@ public class DentistsController : ControllerBase
         var appointments = _dentistsService.GetAppointmentsList(queryParameters, specificDate);
 
         return Ok(appointments);
+    }
+
+    [HttpGet("{dentistId:int}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<DentistDtoAsUser>> GetDentist(int dentistId)
+    {
+        var dentist = await _dentistsService.GetDentistAsync(dentistId);
+
+        return Ok(dentist);
     }
 }

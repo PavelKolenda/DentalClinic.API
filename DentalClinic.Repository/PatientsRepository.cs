@@ -31,7 +31,9 @@ public class PatientsRepository : IPatientsRepository
     }
     public PagedList<Patient> GetPaged(QueryParameters query)
     {
-        var dbQuery = _context.Patients.AsQueryable();
+        var dbQuery = _context.Patients.AsQueryable()
+            .Include(r => r.Roles)
+            .Where(x => x.Roles.Count == 1 && x.Roles.Any(r => r.Name == "Patient"));
 
         if (query.SortOrder is not null)
         {
@@ -96,6 +98,15 @@ public class PatientsRepository : IPatientsRepository
         return patient;
     }
 
+    public async Task<Patient> CreateAsync(Patient patient, Role role)
+    {
+        patient.Roles = [role];
+        await _context.Patients.AddAsync(patient);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Create Patient with Id:{Id}", patient.Id);
+        return patient;
+    }
+
     public async Task DeleteAsync(int id)
     {
         await _context.Patients.Where(p => p.Id == id).ExecuteDeleteAsync();
@@ -104,15 +115,22 @@ public class PatientsRepository : IPatientsRepository
 
     public async Task UpdateAsync(int id, Patient patient)
     {
-        await _context.Patients.Where(p => p.Id == id)
-            .ExecuteUpdateAsync(s => s
-            .SetProperty(p => p.Name, patient.Name)
-            .SetProperty(p => p.Surname, patient.Surname)
-            .SetProperty(p => p.Patronymic, patient.Patronymic)
-            .SetProperty(p => p.BirthDate, patient.BirthDate)
-            .SetProperty(p => p.Email, patient.Email)
-            .SetProperty(p => p.PasswordHash, patient.PasswordHash)
-            );
+        var patientEntity = await _context.Patients.FirstOrDefaultAsync(x => x.Id == id);
+
+        patientEntity.Name = patient.Name;
+        patientEntity.Surname = patient.Surname;
+        patientEntity.Patronymic = patient.Patronymic;
+        patientEntity.Address = patient.Address;
+        patientEntity.Email = patient.Email;
+        patientEntity.PhoneNumber = patient.PhoneNumber;
+        patientEntity.BirthDate = patient.BirthDate;
+
+        if (!string.IsNullOrEmpty(patient.PasswordHash) && patient.PasswordHash != null)
+        {
+            patientEntity.PasswordHash = patient.PasswordHash;
+        }
+
+        await _context.SaveChangesAsync();
 
         await _context.SaveChangesAsync();
 

@@ -16,6 +16,8 @@ public class ClinicDbContext : DbContext
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Specialization> Specializations { get; set; }
     public DbSet<WorkingSchedule> WorkingSchedules { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<News> News { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,5 +25,7 @@ public class ClinicDbContext : DbContext
         modelBuilder.ApplyConfiguration(new PatientConfiguration());
         modelBuilder.ApplyConfiguration(new SpecializationConfiguration());
         modelBuilder.ApplyConfiguration(new AppointmentsConfiguration());
+        modelBuilder.ApplyConfiguration(new NotificationConfiguration());
+        modelBuilder.ApplyConfiguration(new NewsConfiguration());
     }
 }

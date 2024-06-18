@@ -8,6 +8,8 @@ using DentalClinic.Shared.Pagination;
 
 using Mapster;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace DentalClinic.Services;
 public class WorkingScheduleService : IWorkingScheduleService
 {
@@ -18,9 +20,9 @@ public class WorkingScheduleService : IWorkingScheduleService
         _workingScheduleRepository = workingScheduleService;
     }
 
-    public PagedList<WorkingScheduleDto> GetPaged(QueryParameters query)
+    public PagedList<WorkingScheduleDto> GetPaged(QueryParameters query, string? dayFilter)
     {
-        var wsPaged = _workingScheduleRepository.GetPaged(query);
+        var wsPaged = _workingScheduleRepository.GetPaged(query, dayFilter);
 
         var wsDto = wsPaged.Items.Adapt<List<WorkingScheduleDto>>();
 
@@ -43,6 +45,21 @@ public class WorkingScheduleService : IWorkingScheduleService
             throw new InvalidRequestException("Invalid working day");
         }
 
+        var isWorkingExists = _workingScheduleRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Start == workingScheduleCreateDto.Start
+            && x.End == workingScheduleCreateDto.End
+            && x.WorkingDay == workingScheduleCreateDto.WorkingDay);
+
+        if (isWorkingExists == null)
+        {
+            throw new InvalidRequestException("Provided working schedule already exists");
+        }
+
+        if ((workingScheduleCreateDto.End - workingScheduleCreateDto.Start).TotalHours > 12)
+        {
+            throw new InvalidRequestException("Working day can't be more than 12 hours");
+        }
+
         WorkingSchedule workingSchedule = workingScheduleCreateDto.Adapt<WorkingSchedule>();
 
         var wsToReturn = await _workingScheduleRepository.CreateAsync(workingSchedule);
@@ -56,6 +73,11 @@ public class WorkingScheduleService : IWorkingScheduleService
         if (!IsWorkingDayValid(wsUpdateDto.WorkingDay))
         {
             throw new InvalidRequestException("Invalid working day");
+        }
+
+        if ((wsUpdateDto.End - wsUpdateDto.Start).TotalHours > 12)
+        {
+            throw new InvalidRequestException("Working day can't be more than 12 hours");
         }
 
         var workingSchedule = wsUpdateDto.Adapt<WorkingSchedule>();

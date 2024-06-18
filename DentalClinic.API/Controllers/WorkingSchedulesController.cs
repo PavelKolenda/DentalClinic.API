@@ -22,9 +22,9 @@ public class WorkingSchedulesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<PagedList<WorkingScheduleDto>> GetPaged([FromQuery] QueryParameters query)
+    public ActionResult<PagedList<WorkingScheduleDto>> GetPaged([FromQuery] QueryParameters query, string? dayFilter = default)
     {
-        var workingSchedules = _workingScheduleService.GetPaged(query);
+        var workingSchedules = _workingScheduleService.GetPaged(query, dayFilter);
 
         return Ok(workingSchedules);
     }
@@ -41,8 +41,7 @@ public class WorkingSchedulesController : ControllerBase
     public async Task<ActionResult<WorkingScheduleDto>> CreateAsync([FromBody] WorkingScheduleCreateDto workingSchedule)
     {
         var ws = await _workingScheduleService.CreateAsync(workingSchedule);
-
-        return Ok(ws);
+        return CreatedAtRoute(new { id = ws.Id }, ws);
     }
 
     [HttpPut("{id:int}")]

@@ -1,4 +1,5 @@
 ﻿using DentalClinic.Models.Entities;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -29,3 +30,4 @@ public class DentistConfiguration : IEntityTypeConfiguration<Dentist>
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
+
