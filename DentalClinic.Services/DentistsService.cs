@@ -151,9 +151,11 @@ public class DentistsService : IDentistsService
         var dentist = await _dentistRepository.GetByIdAsync(id, false);
 
         var patient = await _patientsRepository.GetAll()
+            .Include(r => r.Roles)
             .FirstOrDefaultAsync(x => x.Name == dentist.Name
             && x.Surname == dentist.Surname
-            && x.Patronymic == dentist.Patronymic);
+            && x.Patronymic == dentist.Patronymic
+            && x.Roles.Any(r => r.Name == "Dentist"));
 
         if (patient == null)
         {
