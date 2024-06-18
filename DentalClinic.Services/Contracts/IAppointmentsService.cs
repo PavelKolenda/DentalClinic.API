@@ -8,4 +8,5 @@ public interface IAppointmentsService
     Task<IEnumerable<AvailableAppointmentsDto>> GetAvailableForMonthAsync(int dentistId);
     Task<AppointmentDto> GetById(int appointmentId);
     Task<AppointmentDto> MakeAppointmentAsync(int dentistId, int appointmentId);
+    Task<AppointmentDto> PatientReenrollment(int patientId, int appointmentId);
 }

@@ -55,6 +55,40 @@ public class AppointmentsService : IAppointmentsService
         return availableAppointments;
     }
 
+    public async Task<AppointmentDto> PatientReenrollment(int patientId, int appointmentId)
+    {
+        int dentistId = GetDentistIdFromClaims();
+
+        Dentist? dentist = await _dentistRepository.GetAll()
+            .Include(a => a.Appointments)
+            .FirstOrDefaultAsync(x => x.Id == dentistId);
+
+        if (dentist == null)
+        {
+            throw new UnauthorizedAccessException("");
+        }
+
+        if (!dentist.Appointments.Any(x => x.Id == appointmentId && x.DentistId == dentist.Id))
+        {
+            throw new InvalidRequestException($"Appointment with Id:{appointmentId} don't exists for dentsit with Id:{dentist.Id}");
+        }
+
+        Patient patient = await _patientsRepository.GetById(patientId, false);
+
+        if (patient == null)
+        {
+            throw new InvalidRequestException("");
+        }
+
+        Appointment appointment = await _appointmentsRepository.GetById(appointmentId);
+
+        await _appointmentsRepository.AssignPatientAsync(patient, appointment);
+
+        var createdAppointment = await GetById(appointmentId, patientId);
+
+        return createdAppointment;
+    }
+
     public async Task<AppointmentDto> MakeAppointmentAsync(int dentistId, int appointmentId)
     {
         int patientId = GetPatientIdFromClaims();
@@ -105,11 +139,44 @@ public class AppointmentsService : IAppointmentsService
         AppointmentDto createdAppointment = new()
         {
             AppointmentId = appointmentId,
+            DentistId = appointment.DentistId,
             DentistName = appointment.Dentist.Name,
             DentistSurname = appointment.Dentist.Surname,
             DentistPatronymic = appointment.Dentist.Patronymic,
             DentistCabinetNumber = appointment.Dentist.CabinetNumber,
             DentistSpecialization = appointment.Dentist.Specialization.Name,
+            PatientId = appointment.PatientId,
+            PatientName = appointment.Patient.Name,
+            PatientSurname = appointment.Patient.Surname,
+            PatientPatronymic = appointment.Patient.Patronymic,
+            AppointmentDate = DateOnly.FromDateTime(appointment.Date),
+            AppointmentTime = TimeOnly.FromDateTime(appointment.Date)
+        };
+
+        return createdAppointment;
+    }
+
+    private async Task<AppointmentDto> GetById(int appointmentId, int patientId)
+    {
+        var appointment = await _appointmentsRepository
+            .GetAll()
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(a => a.Patient)
+            .Include(d => d.Dentist)
+                .ThenInclude(d => d.Specialization)
+            .FirstAsync(x => x.Id == appointmentId && x.PatientId == patientId);
+
+        AppointmentDto createdAppointment = new()
+        {
+            AppointmentId = appointmentId,
+            DentistId = appointment.DentistId,
+            DentistName = appointment.Dentist.Name,
+            DentistSurname = appointment.Dentist.Surname,
+            DentistPatronymic = appointment.Dentist.Patronymic,
+            DentistCabinetNumber = appointment.Dentist.CabinetNumber,
+            DentistSpecialization = appointment.Dentist.Specialization.Name,
+            PatientId = appointment.PatientId,
             PatientName = appointment.Patient.Name,
             PatientSurname = appointment.Patient.Surname,
             PatientPatronymic = appointment.Patient.Patronymic,
@@ -131,5 +198,18 @@ public class AppointmentsService : IAppointmentsService
 
         int patientId = Convert.ToInt32(patientIdClaim.Value);
         return patientId;
+    }
+
+    public int GetDentistIdFromClaims()
+    {
+        var dentistIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("dentistId");
+
+        if (dentistIdClaim == null)
+        {
+            throw new UnauthorizedAccessException("Dentist isn't authorized");
+        }
+
+        int dentistId = Convert.ToInt32(dentistIdClaim.Value);
+        return dentistId;
     }
 }
