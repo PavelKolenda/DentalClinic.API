@@ -111,7 +111,32 @@ public class DentistsService : IDentistsService
 
     public async Task DeleteAsync(int id)
     {
+        var dentist = await _dentistRepository.GetAll()
+            .Include(s => s.Specialization)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        var patient = await GetDentistFromPatients(dentist);
+
+        await _patientsRepository.DeleteAsync(patient.Id);
         await _dentistRepository.DeleteAsync(id);
+    }
+
+
+    private async Task<Patient> GetDentistFromPatients(Dentist dentist)
+    {
+        var patient = await _patientsRepository.GetAll()
+            .Include(r => r.Roles)
+            .FirstOrDefaultAsync(x => x.Name == dentist.Name
+            && x.Surname == dentist.Surname
+            && x.Patronymic == dentist.Patronymic
+            && x.Roles.Any(r => r.Name == "Dentist"));
+
+        if (patient == null)
+        {
+            throw new InvalidRequestException("Dentist exists, but patient don't");
+        }
+
+        return patient;
     }
 
     public async Task<DentistDtoAsUser> GetDentistAsync(int id)
@@ -120,15 +145,7 @@ public class DentistsService : IDentistsService
             .Include(s => s.Specialization)
             .FirstOrDefaultAsync(x => x.Id == id);
 
-        var patient = await _patientsRepository.GetAll()
-            .FirstOrDefaultAsync(x => x.Name == dentist.Name
-            && x.Surname == dentist.Surname
-            && x.Patronymic == dentist.Patronymic);
-
-        if (patient == null)
-        {
-            throw new InvalidRequestException("");
-        }
+        var patient = await GetDentistFromPatients(dentist);
 
         DentistDtoAsUser dentistDtoAsUser = new()
         {
@@ -150,18 +167,7 @@ public class DentistsService : IDentistsService
     {
         var dentist = await _dentistRepository.GetByIdAsync(id, false);
 
-        var patient = await _patientsRepository.GetAll()
-            .Include(r => r.Roles)
-            .FirstOrDefaultAsync(x => x.Name == dentist.Name
-            && x.Surname == dentist.Surname
-            && x.Patronymic == dentist.Patronymic
-            && x.Roles.Any(r => r.Name == "Dentist"));
-
-        if (patient == null)
-        {
-            throw new InvalidRequestException("");
-        }
-
+        var patient = await GetDentistFromPatients(dentist);
 
         Patient patientToUpdate = new()
         {
