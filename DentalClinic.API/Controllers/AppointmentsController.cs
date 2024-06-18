@@ -47,6 +47,7 @@ public class AppointmentsController : ControllerBase
     }
 
     [HttpGet("{appointmentId:int}/download")]
+    [Authorize(Roles = "Patient")]
     public async Task<IActionResult> DownloadAppointmentInfo(int appointmentId)
     {
         var pdfBytes = await _appointmentInfoDownload.Download(appointmentId);
