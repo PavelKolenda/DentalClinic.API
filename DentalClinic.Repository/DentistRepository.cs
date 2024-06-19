@@ -15,11 +15,15 @@ public class DentistRepository : IDentistRepository
 {
     private readonly ClinicDbContext _context;
     private readonly ILogger<DentistRepository> _logger;
+    private readonly IAppointmentsRepository _appointmentsRepository;
 
-    public DentistRepository(ClinicDbContext context, ILogger<DentistRepository> logger)
+    public DentistRepository(ClinicDbContext context,
+                             ILogger<DentistRepository> logger,
+                             IAppointmentsRepository appointmentsRepository)
     {
         _context = context;
         _logger = logger;
+        _appointmentsRepository = appointmentsRepository;
     }
 
     public IQueryable<Dentist> GetAll()
@@ -64,7 +68,57 @@ public class DentistRepository : IDentistRepository
     public async Task AddWorkingSchedule(Dentist dentist, WorkingSchedule workingSchedule)
     {
         dentist.WorkingSchedule.Add(workingSchedule);
+
+        List<Appointment> appointments = [];
+
+        int workingDayInMinutes = Convert.ToInt32((workingSchedule.End - workingSchedule.Start).TotalMinutes);
+        int appointmentsCount = workingDayInMinutes / TimeToOneAppointment.Minute;
+
+        for (int i = 1; i < 32; i++)
+        {
+            var date = DateTime.UtcNow.AddDays(i);
+
+            var dayOfWeek = GetDayOfWeekAsString(date.DayOfWeek);
+
+            if (dayOfWeek != workingSchedule.WorkingDay)
+                continue;
+
+            MutableTimeOnly appointmentTime = new(workingSchedule.Start);
+            MutableDateTime appointmentDate = new(DateTime.UtcNow.AddDays(i));
+
+            for (int j = 0; j < appointmentsCount; j++)
+            {
+                Appointment appointment = new()
+                {
+                    Date = new DateTime(DateOnly.FromDateTime(appointmentDate.Date), appointmentTime.Time),
+                    DentistId = dentist.Id,
+                };
+
+                appointments.Add(appointment);
+
+                appointmentTime.AddMinutes(TimeToOneAppointment.Minute);
+            }
+
+        }
+        await _appointmentsRepository.CreateAsync(appointments);
+
         await _context.SaveChangesAsync();
+    }
+
+    private TimeOnly TimeToOneAppointment { get; set; } = new TimeOnly(0, 30, 0);
+
+    protected string GetDayOfWeekAsString(DayOfWeek dayOfWeek)
+    {
+        return dayOfWeek switch
+        {
+            DayOfWeek.Monday => "понедельник",
+            DayOfWeek.Tuesday => "вторник",
+            DayOfWeek.Wednesday => "среда",
+            DayOfWeek.Thursday => "четверг",
+            DayOfWeek.Friday => "пятница",
+            DayOfWeek.Saturday => "суббота",
+            DayOfWeek.Sunday => "воскресенье"
+        };
     }
 
     public async Task DeleteWorkingScheduleAsync(Dentist dentist, WorkingSchedule workingSchedule)
@@ -137,5 +191,39 @@ public class DentistRepository : IDentistRepository
             "patronymic" => p => p.Patronymic,
             _ => p => p.Name
         };
+    }
+}
+class MutableTimeOnly
+{
+    public TimeOnly Time { get; private set; }
+
+    public MutableTimeOnly(TimeOnly time)
+    {
+        Time = time;
+    }
+
+    public void AddMinutes(int minutes)
+    {
+        Time = Time.AddMinutes(minutes);
+    }
+
+    public void AddHours(int hours)
+    {
+        Time = Time.AddHours(hours);
+    }
+}
+
+class MutableDateTime
+{
+    public DateTime Date { get; private set; }
+
+    public MutableDateTime(DateTime date)
+    {
+        Date = date;
+    }
+
+    public void AddDays(int days)
+    {
+        Date = Date.AddDays(days);
     }
 }
