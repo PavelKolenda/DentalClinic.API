@@ -123,7 +123,28 @@ public class DentistRepository : IDentistRepository
 
     public async Task DeleteWorkingScheduleAsync(Dentist dentist, WorkingSchedule workingSchedule)
     {
+        DateOnly now = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1));
+
+        var appointments = await _context.Appointments
+               .Include(a => a.Dentist)
+               .Where(a => a.DentistId == dentist.Id && DateOnly.FromDateTime(a.Date) >= now
+               && DateOnly.FromDateTime(a.Date) <= now.AddDays(30))
+               .ToListAsync();
+
+        List<Appointment> appointmentsToDelete = [];
+
+        foreach (var appointment in appointments)
+        {
+            if (GetDayOfWeekAsString(appointment.Date.Date.DayOfWeek) == workingSchedule.WorkingDay)
+            {
+                appointmentsToDelete.Add(appointment);
+            }
+        }
+
         dentist.WorkingSchedule.Remove(workingSchedule);
+
+        _context.Appointments.RemoveRange(appointmentsToDelete);
+
         await _context.SaveChangesAsync();
     }
 
