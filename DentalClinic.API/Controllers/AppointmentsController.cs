@@ -46,7 +46,7 @@ public class AppointmentsController : ControllerBase
         return Ok(appointment);
     }
 
-    [HttpDelete("{appointmentId:int}/cancel-appointment")]
+    [HttpDelete("{appointmentId:int}")]
     [Authorize(Roles = "Patient")]
     public async Task<ActionResult> CancelAppointment(int appointmentId)
     {
