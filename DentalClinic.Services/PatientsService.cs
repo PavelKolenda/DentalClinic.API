@@ -109,7 +109,7 @@ public class PatientsService : IPatientsService
                 PatientSurname = appointment.Patient.Surname,
                 PatientPatronymic = appointment.Patient.Patronymic,
                 AppointmentDate = DateOnly.FromDateTime(appointment.Date),
-                AppointmentTime = TimeOnly.FromDateTime(appointment.Date.AddHours(3))
+                AppointmentTime = TimeOnly.FromDateTime(appointment.Date)
             });
         }
         return new PagedList<AppointmentDto>(appointmentsDto, appointments.Page, appointments.PageSize, appointments.TotalCount);
