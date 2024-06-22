@@ -137,6 +137,10 @@ public class PatientsRepository : IPatientsRepository
 
     public PagedList<Appointment> GetAllAppointments(int patientId, QueryParameters query)
     {
+        var dateOnly = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        DateTime now = dateOnly.ToDateTime(new TimeOnly(DateTime.UtcNow.Hour, DateTime.UtcNow.Minute, 0)).AddHours(1);
+
         var appointments = _context.Appointments
             .AsNoTracking()
             .AsQueryable()
@@ -144,7 +148,7 @@ public class PatientsRepository : IPatientsRepository
             .Include(x => x.Patient)
             .Include(d => d.Dentist)
                 .ThenInclude(s => s.Specialization)
-            .Where(x => x.PatientId == patientId)
+            .Where(x => x.PatientId == patientId && x.Date >= now)
             .OrderBy(x => x.Date);
 
 
