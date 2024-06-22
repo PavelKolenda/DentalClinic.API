@@ -34,6 +34,7 @@ public class AppointmentsRepository : IAppointmentsRepository
             .AsNoTracking()
             .Include(a => a.Dentist)
             .Where(a => a.Date >= today && a.Date <= today.AddDays(31) && a.PatientId == null && a.DentistId == dentistId)
+            .OrderBy(a => a.Date)
             .ToListAsync();
 
         return appointments;
