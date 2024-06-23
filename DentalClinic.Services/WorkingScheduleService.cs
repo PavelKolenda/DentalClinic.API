@@ -100,6 +100,8 @@ public class WorkingScheduleService : IWorkingScheduleService
             "среда" => true,
             "четверг" => true,
             "пятница" => true,
+            "суббота" => true,
+            "воскресенье" => true,
             _ => false
         };
     }
