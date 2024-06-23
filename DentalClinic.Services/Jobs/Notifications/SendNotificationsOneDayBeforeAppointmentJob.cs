@@ -50,8 +50,8 @@ public class SendNotificationsOneDayBeforeAppointmentJob : IJob
 
             sb.Clear();
             sb.AppendLine($"Уважаемый {patient.Surname} {patient.Name} {patient?.Patronymic}!");
-            sb.AppendLine($"Напоминаем вам о записи к врачу {dentist.Surname} {dentist.Name} {dentist?.Patronymic}");
-            sb.AppendLine($"На {DateOnly.FromDateTime(appointment.Date)} в {TimeOnly.FromDateTime(appointment.Date)}");
+            sb.AppendLine($"Напоминаем вам о записи к врачу {dentist.Surname} {dentist.Name} {dentist?.Patronymic} ");
+            sb.AppendLine($"{DateOnly.FromDateTime(appointment.Date).ToString("dd.MM.yyyy")} в {TimeOnly.FromDateTime(appointment.Date)}");
             notification.Text = sb.ToString();
 
             await _notificationsSenderService.SendToPatientAsync(patient.Id, notification);
