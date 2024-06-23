@@ -58,7 +58,7 @@ public class AppointmentInfoDownloadPdf : IAppointmentInfoDownload
                         column.Item().Text(text =>
                         {
                             text.Span("4. Дата приема ");
-                            text.Span($"{appointment.AppointmentDate.Day}.${appointment.AppointmentDate.Month}.{appointment.AppointmentDate.Year}")
+                            text.Span($"{appointment.AppointmentDate.ToString("dd.MM.yyyy")}")
                             .Underline();
                         });
 
